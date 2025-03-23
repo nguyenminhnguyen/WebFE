@@ -61,7 +61,7 @@ function Search(){
                             <p className=" text-lg break-words w-3/4 mx-auto">
                             Xây dựng sự nghiệp freelancer của bạn với Freelancer AI. Với hàng nghìn công việc được đăng lên mỗi ngày.
                         </p>
-                            <div classnName='flex justify-center'>
+                            <div className='flex justify-center'>
                             <button 
                                 onClick={handleJobSearch} 
                                 className="mt-4 p-2 bg-green-600 text-white rounded-lg hover:bg-green-500 "

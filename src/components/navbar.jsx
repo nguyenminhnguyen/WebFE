@@ -1,4 +1,6 @@
 import React from 'react';
+import Login_Modal from './modal/login';
+import Register_Modal from './modal/register';
 
 function NavBar(){
     return (
@@ -17,9 +19,9 @@ function NavBar(){
                 </li>
             </ul>
             </div>
-            <div className="flex space-x-4">
-                    <a href="/login" className="text-black py-2 hover:text-green-700">Đăng nhập</a>
-                    <a href="/signup" className="text-white bg-green-700 px-4 py-2 rounded-xl hover:bg-green-600">Đăng ký</a>
+            <div className="flex space-x-4">                    
+                    <Login_Modal/>
+                    <Register_Modal/>
             </div>
         </nav>
     )
