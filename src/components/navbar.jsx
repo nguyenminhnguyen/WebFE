@@ -4,7 +4,7 @@ import Register_Modal from './modal/register';
 
 function NavBar(){
     return (
-        <nav className="bg-white p-4 flex justify-between ">
+        <nav className="bg-white p-4 flex justify-between sticky top-0 z-50 ">
             <div className="flex space-x-4">
             <h1 className="text-2xl font-bold" >Freelancer AI</h1>
             <ul className="flex space-x-4">
