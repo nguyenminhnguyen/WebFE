@@ -12,10 +12,13 @@ import AuthLogin from "./components/auth/AuthLogin";
 import "./styles/App.css";
 import { AnimatePresence } from "framer-motion";
 import AnimatedPage from "./components/animated_pages";
+import ProjectsPage from "./pages/projectsPage";
+import FreelancerPage from "./pages/freelancerPage";
 
 // 👇 Bọc AnimatePresence ở component con dùng location
 function AnimatedRoutes() {
   const location = useLocation();
+  console.log(location);
 
   return (
     <AnimatePresence mode="wait">
@@ -41,6 +44,22 @@ function AnimatedRoutes() {
           element={
             <AnimatedPage>
               <AuthLogin />
+            </AnimatedPage>
+          }
+        />
+        <Route
+          path="/projects"
+          element={
+            <AnimatedPage>
+              <ProjectsPage />
+            </AnimatedPage>
+          }
+        />
+        <Route
+          path="/freelancer"
+          element={
+            <AnimatedPage>
+              <FreelancerPage />
             </AnimatedPage>
           }
         />

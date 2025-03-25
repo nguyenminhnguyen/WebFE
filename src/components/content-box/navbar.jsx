@@ -11,8 +11,9 @@ function NavBar() {
   );
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchType, setSearchType] = useState("freelancer"); // or 'job'
+  const [searchType, setSearchType] = useState("freelancer");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -25,17 +26,37 @@ function NavBar() {
 
   return (
     <nav className="bg-white px-4 py-3 flex flex-col md:flex-row md:justify-between md:items-center sticky top-0 z-50 border-b border-gray-200 shadow-sm space-y-3 md:space-y-0">
-      {/* Logo + Menu */}
-      <div className="flex items-center justify-between md:space-x-6 w-full md:w-auto">
+      {/* Logo + Hamburger */}
+      <div className="flex items-center justify-between w-full md:w-auto">
         <Link to="/" className="flex items-center space-x-2">
-          {/* 👇 Thay hình ảnh logo tại đây */}
           <img src="/plain.svg" alt="Logo" className="w-8 h-8" />
           <h1 className="text-xl md:text-2xl font-bold hover:text-green-800 transition duration-200">
             Freelancer AI
           </h1>
         </Link>
 
-        {/* Mobile search hidden toggle (optional) */}
+        {/* Hamburger icon */}
+        {!isAuthPage && (
+          <button
+            className="md:hidden text-gray-700"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Search bar */}
@@ -67,10 +88,7 @@ function NavBar() {
 
             {/* Dropdown List */}
             {showDropdown && (
-              <div
-                className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow z-10 overflow-hidden text-sm
-               transition-all duration-200 ease-out transform origin-top scale-95 opacity-0 animate-dropdown"
-              >
+              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow z-10 overflow-hidden text-sm">
                 <button
                   type="button"
                   className="w-full px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
@@ -99,13 +117,13 @@ function NavBar() {
         </form>
       )}
 
-      {/* Menu */}
+      {/* Desktop menu */}
       {!isAuthPage && (
-        <div className="flex items-center justify-between w-full md:w-auto space-x-4">
-          <ul className="hidden md:flex space-x-4 text-sm md:text-base">
+        <div className="hidden md:flex items-center space-x-4">
+          <ul className="flex space-x-4 text-sm md:text-base">
             {[
               { label: "Trang chủ", path: "/" },
-              { label: "Dự án", path: "/project" },
+              { label: "Dự án", path: "/projects" },
               { label: "Freelancer", path: "/freelancer" },
             ].map(({ label, path }) => (
               <li key={path}>
@@ -125,6 +143,32 @@ function NavBar() {
 
           {/* Auth buttons */}
           <div className="flex items-center space-x-2 md:space-x-4">
+            <Login />
+            <Register />
+          </div>
+        </div>
+      )}
+
+      {/* Mobile menu dropdown */}
+      {isMobileMenuOpen && !isAuthPage && (
+        <div className="md:hidden mt-2 space-y-2 bg-white border-t border-gray-200 py-4 px-4 rounded-b-xl shadow-sm">
+          {[
+            { label: "Trang chủ", path: "/" },
+            { label: "Dự án", path: "/projects" },
+            { label: "Freelancer", path: "/freelancer" },
+          ].map(({ label, path }) => (
+            <Link
+              key={path}
+              to={path}
+              className="block text-gray-800 hover:text-green-700 text-sm py-2 border-b last:border-none"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {label}
+            </Link>
+          ))}
+
+          {/* Auth buttons mobile */}
+          <div className="flex flex-col space-y-2 pt-2">
             <Login />
             <Register />
           </div>

@@ -2,6 +2,7 @@ import React from "react";
 import SearchUI from "../components/content-box/SearchUI";
 import FeatureSection from "../components/content-box/FeatureSection";
 import ContentBox from "../components/content-box/contentbox";
+import Footer from "../components/footer";
 
 function Home() {
   const categories = [
@@ -58,6 +59,7 @@ function Home() {
           Các tính năng nổi bật sử dụng AI
         </h2>
         <FeatureSection />
+        <Footer/>
       </section>
     </div>
   );

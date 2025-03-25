@@ -11,7 +11,7 @@ function Search() {
   };
 
   const handleJobSearch = () => {
-    window.location.href = '/jobs';
+    window.location.href = '/projects';
   };
 
   return (
