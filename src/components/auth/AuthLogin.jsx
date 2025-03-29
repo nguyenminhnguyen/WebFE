@@ -72,7 +72,7 @@ export default function AuthLogin() {
           <div className="h-px bg-gray-300 flex-1 mx-2" />
         </div>
 
-       <SocialButtons onClick={handleSocialLogin}/>
+        <SocialButtons onClick={handleSocialLogin} />
 
         {/* Redirect to Register */}
         <p className="text-center text-sm text-gray-600">
