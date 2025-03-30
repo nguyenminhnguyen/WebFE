@@ -1,5 +1,5 @@
 import React from "react";
-import AuthLayout from "../../pages/AuthLayout";
+import AuthLayout from "../../pages/HomePage_AuthPage/AuthLayout";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   FaEnvelope,
@@ -17,8 +17,20 @@ export default function AuthLogin() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: xử lý login
-    navigate(dest);
+
+    // 👇 Giả sử bạn lấy thông tin người dùng từ form hoặc API
+    const userRole = "freelancer"; // Tạm gán, thực tế sẽ lấy từ API
+
+    // 👉 Xác định đường dẫn chuyển hướng
+    let targetPath = "/";
+    if (userRole === "freelancer") {
+      targetPath = "/login/freelancer";
+    } else if (userRole === "employer") {
+      targetPath = "/login/employer";
+    }
+
+    // Chuyển hướng người dùng
+    navigate(targetPath);
   };
 
   const handleSocialLogin = (provider) => {
@@ -72,7 +84,7 @@ export default function AuthLogin() {
           <div className="h-px bg-gray-300 flex-1 mx-2" />
         </div>
 
-       <SocialButtons onClick={handleSocialLogin}/>
+        <SocialButtons onClick={handleSocialLogin} />
 
         {/* Redirect to Register */}
         <p className="text-center text-sm text-gray-600">

@@ -1,10 +1,10 @@
 import React from "react";
-import SearchUI from "../components/content-box/SearchUI";
-import FeatureSection from "../components/content-box/FeatureSection";
-import ContentBox from "../components/content-box/contentbox";
-import Footer from "../components/footer";
+import SearchUI from "../../components/content-box/SearchUI";
+import FeatureSection from "../../components/content-box/FeatureSection";
+import ContentBox from "../../components/content-box/contentbox";
+import Footer from "../../components/content-box/footer";
 
-function Home() {
+function HomePage() {
   const categories = [
     { title: "Designer", subtitle: "(0 freelancer)" },
     { title: "Tiếp thị số", subtitle: "(0 freelancer)" },
@@ -59,10 +59,10 @@ function Home() {
           Các tính năng nổi bật sử dụng AI
         </h2>
         <FeatureSection />
-        <Footer/>
+        <Footer />
       </section>
     </div>
   );
 }
 
-export default Home;
+export default HomePage;

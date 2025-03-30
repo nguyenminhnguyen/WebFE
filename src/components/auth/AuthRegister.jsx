@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import AuthLayout from "../../pages/AuthLayout";
+import AuthLayout from "../../pages/HomePage_AuthPage/AuthLayout";
 import {
   FaUserTie,
   FaBriefcase,
