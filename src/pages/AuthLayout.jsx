@@ -15,7 +15,7 @@ export default function AuthLayout({ children }) {
             Tham gia cùng hàng triệu freelancer và nhà tuyển dụng toàn cầu.
           </p>
           <img
-            src="src/img/freelancer_AI.png"
+            src="/img/freelancer_AI.png"
             className="mt-10 w-3/4 max-w-sm mx-auto drop-shadow-lg rounded-xl"
             alt="Freelancer AI"
           />
