@@ -7,9 +7,14 @@ import { FaUserCircle } from "react-icons/fa";
 
 export default function NavBarWrapper() {
   const location = useLocation();
-  const isAuthPage =
-    location.pathname === "/login" || location.pathname === "/register";
-  const isFreelancerPage = location.pathname.startsWith("/login/freelancer");
+
+  const isMinimalNav =
+    location.pathname === "/login" ||
+    location.pathname === "/register" ||
+    location.pathname === "/register/freelancer" ||
+    location.pathname === "/register/employer";
+
+  const isFreelancerPage = location.pathname.startsWith("/freelancer") || location.pathname === "/login/freelancer";
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -47,21 +52,21 @@ export default function NavBarWrapper() {
   return (
     <NavBar
       showLogo
-      showSearch={!isAuthPage}
+      showSearch={!isMinimalNav}
       menuItems={
-        isFreelancerPage
+        isMinimalNav
+          ? []
+          : isFreelancerPage
           ? freelancerMenu
-          : !isAuthPage
-          ? [
+          : [
               { label: "Trang chủ", path: "/" },
               { label: "Dự án", path: "/projects" },
               { label: "Freelancer", path: "/freelancer" },
             ]
-          : []
       }
-      showAuthButtons={!isAuthPage}
+      showAuthButtons={!isMinimalNav}
       authButtons={
-        isFreelancerPage ? profileDropdown : (
+        isMinimalNav ? null : isFreelancerPage ? profileDropdown : (
           <>
             <Login />
             <Register />
