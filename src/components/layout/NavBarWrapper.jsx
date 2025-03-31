@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import NavBar from './navbar';
-import Login from '../login/loginButtonMenu';
-import Register from '../../services/auth/register/registerButtonMenu';
+import Login from '../../components/login/loginButtonMenu';
+import Register from '../../components/register/registerButtonMenu';
 import { FaUserCircle } from 'react-icons/fa';
 
 export default function NavBarWrapper() {

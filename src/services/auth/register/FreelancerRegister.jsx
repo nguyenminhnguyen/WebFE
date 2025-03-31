@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa';
 import BirthAndPhoneSelect from '../../../components/register/BirthdayAndPhoneNumberSelect';
 import { useNavigate } from 'react-router-dom';
-import AuthLayout from '../AuthLayout';
+import AuthLayout from '../../../components/layout/AuthLayout';
 export default function FreelancerRegister({ onBack }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({

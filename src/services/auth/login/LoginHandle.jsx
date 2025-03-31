@@ -1,8 +1,8 @@
 import React from 'react';
-import AuthLayout from '../AuthLayout';
+import AuthLayout from '../../../components/layout/AuthLayout';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
-import SocialButtons from './social-button';
+import SocialButtons from '../../../components/login/social-button';
 
 export default function AuthLogin() {
   const navigate = useNavigate();

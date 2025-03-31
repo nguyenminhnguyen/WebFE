@@ -2,19 +2,19 @@ import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
-import AnimatedPage from '../components/animated_pages'; // dùng bản chuẩn đã style
-import NavBarWrapper from '../components/NavBarWrapper';
-import ProtectedRoute from './ProtectedRoutes';
+import AnimatedPage from '../components/animation/animated_pages'; // dùng bản chuẩn đã style
+import NavBarWrapper from '../components/layout/NavBarWrapper';
+import ProtectedRoute from '../routes/ProtectedRoutes';
 
 // Pages
-import HomePage from '../services/pages/HomePage/HomePage';
+import HomePage from '../pages/HomePage/HomePage';
 import RegisterHandle from '../services/auth/register/RegisterHandle';
 import LoginHandle from '../services/auth/login/LoginHandle';
-import ProjectsPage from '../services/pages/HomePage/FreelancerLists';
-import ProjectsList from '../services/pages/afterLogin_freelancer/ProjectsList';
+import FreelancerLists from '../components/afterLogin_employer/FreelancerLists';
+import ProjectsList from '../components/afterLogin_freelancer/ProjectsList';
 import ClientRegister from '../services/auth/register/EmployerRegister';
 import FreelancerRegister from '../services/auth/register/FreelancerRegister';
-import Freelancer from '../services/pages/afterLogin_freelancer/freelancer';
+import Freelancer from '../pages/afterLogin_freelancer/freelancer';
 
 export default function AnimatedRoutes() {
   const location = useLocation();
@@ -83,7 +83,7 @@ export default function AnimatedRoutes() {
             <AnimatedPage>
               <NavBarWrapper />
               <div className="mx-[10vw]">
-                <ProjectsPage />
+                <FreelancerLists />
               </div>
             </AnimatedPage>
           }

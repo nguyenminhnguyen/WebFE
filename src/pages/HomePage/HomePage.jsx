@@ -1,7 +1,7 @@
 import React from 'react';
-import SearchUI from './SearchUI';
-import FeatureSection from './FeatureSection';
-import ContentBox from './contentbox';
+import SearchUI from '../../components/HomePage/SearchUI';
+import FeatureSection from '../../components/HomePage/FeatureSection';
+import ContentBox from '../../components/HomePage/contentbox';
 import Footer from '../../components/layout/footer';
 
 function HomePage() {

@@ -1,23 +1,16 @@
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import AuthLayout from '../AuthLayout';
-import {
-  FaUserTie,
-  FaBriefcase,
-  FaUser,
-  FaLock,
-  FaEnvelope,
-} from 'react-icons/fa';
-import SocialButtons from '../login/social-button';
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import AuthLayout from "../../../components/layout/AuthLayout";
+import { FaUserTie, FaBriefcase } from "react-icons/fa";
 
 export default function AuthRegister() {
   const navigate = useNavigate();
 
   const handleRoleSelect = (role) => {
-    if (role === 'freelancer') {
-      navigate('/register/freelancer');
-    } else if (role === 'client') {
-      navigate('/register/employer');
+    if (role === "freelancer") {
+      navigate("/register/freelancer");
+    } else if (role === "client") {
+      navigate("/register/employer");
     }
   };
 
@@ -30,7 +23,7 @@ export default function AuthRegister() {
         <div className="space-y-4">
           {/* Freelancer */}
           <button
-            onClick={() => handleRoleSelect('freelancer')}
+            onClick={() => handleRoleSelect("freelancer")}
             className="flex items-center gap-4 w-full p-5 border border-gray-300 rounded-2xl hover:border-green-500 hover:shadow-md transition duration-200 text-left bg-white"
           >
             <FaBriefcase className="text-2xl text-green-600" />
@@ -44,7 +37,7 @@ export default function AuthRegister() {
 
           {/* Client */}
           <button
-            onClick={() => handleRoleSelect('client')}
+            onClick={() => handleRoleSelect("client")}
             className="flex items-center gap-4 w-full p-5 border border-gray-300 rounded-2xl hover:border-green-500 hover:shadow-md transition duration-200 text-left bg-white"
           >
             <FaUserTie className="text-2xl text-green-600" />
