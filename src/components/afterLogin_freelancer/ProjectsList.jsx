@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import ProjectDetailModal from "./ProjectDetailModal";
-import projects from "../../data/ProjectsData";
+import React, { useState } from 'react';
+import ProjectDetailModal from './ProjectDetailModal';
+import projects from '../../data/ProjectsData';
 
 export default function ProjectsList() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   const [activeSkills, setActiveSkills] = useState([]);
-  const [budgetFilter, setBudgetFilter] = useState("");
-  const [durationFilter, setDurationFilter] = useState("");
-  const [sortOption, setSortOption] = useState("");
+  const [budgetFilter, setBudgetFilter] = useState('');
+  const [durationFilter, setDurationFilter] = useState('');
+  const [sortOption, setSortOption] = useState('');
 
   const openModal = (project) => {
     setSelectedProject(project);
@@ -29,20 +29,20 @@ export default function ProjectsList() {
 
   const clearFilters = () => {
     setActiveSkills([]);
-    setBudgetFilter("");
-    setDurationFilter("");
-    setSortOption("");
+    setBudgetFilter('');
+    setDurationFilter('');
+    setSortOption('');
   };
 
   const sortProjects = (list) => {
     const sorted = [...list];
-    if (sortOption === "recent") {
+    if (sortOption === 'recent') {
       return sorted.sort((a, b) => new Date(b.postedAt) - new Date(a.postedAt));
     }
-    if (sortOption === "budget-desc") {
+    if (sortOption === 'budget-desc') {
       return sorted.sort((a, b) => {
-        const budgetA = parseInt(a.budget.replace(/\D/g, ""));
-        const budgetB = parseInt(b.budget.replace(/\D/g, ""));
+        const budgetA = parseInt(a.budget.replace(/\D/g, ''));
+        const budgetB = parseInt(b.budget.replace(/\D/g, ''));
         return budgetB - budgetA;
       });
     }
@@ -144,8 +144,8 @@ export default function ProjectsList() {
                   }}
                   className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition ${
                     activeSkills.includes(skill)
-                      ? "bg-green-600 text-white"
-                      : "bg-green-100 text-green-800"
+                      ? 'bg-green-600 text-white'
+                      : 'bg-green-100 text-green-800'
                   }`}
                 >
                   {skill}

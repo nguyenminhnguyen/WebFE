@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { FaSearch, FaUserTie, FaBriefcase } from "react-icons/fa";
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { FaSearch, FaUserTie, FaBriefcase } from 'react-icons/fa';
 
 export default function NavBar({
   showLogo = true,
@@ -10,14 +10,14 @@ export default function NavBar({
   authButtons = null,
 }) {
   const location = useLocation();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchType, setSearchType] = useState("freelancer");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchType, setSearchType] = useState('freelancer');
   const [showDropdown, setShowDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    const path = searchType === "freelancer" ? "/freelancer" : "/employer";
+    const path = searchType === 'freelancer' ? '/freelancer' : '/employer';
     window.location.href = `${path}?search=${searchTerm}`;
   };
 
@@ -46,7 +46,7 @@ export default function NavBar({
               <input
                 type="text"
                 placeholder={`Tìm kiếm ${
-                  searchType === "freelancer" ? "freelancer" : "công việc"
+                  searchType === 'freelancer' ? 'freelancer' : 'công việc'
                 }...`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -58,14 +58,14 @@ export default function NavBar({
                 onClick={() => setShowDropdown((prev) => !prev)}
                 className="absolute right-1 top-1 bottom-1 px-3 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
               >
-                {searchType === "freelancer" ? "Freelancer" : "Công việc"}
+                {searchType === 'freelancer' ? 'Freelancer' : 'Công việc'}
               </button>
               {showDropdown && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow z-10 text-sm">
                   <button
                     type="button"
                     onClick={() => {
-                      setSearchType("freelancer");
+                      setSearchType('freelancer');
                       setShowDropdown(false);
                     }}
                     className="w-full px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
@@ -76,7 +76,7 @@ export default function NavBar({
                   <button
                     type="button"
                     onClick={() => {
-                      setSearchType("job");
+                      setSearchType('job');
                       setShowDropdown(false);
                     }}
                     className="w-full px-4 py-2 hover:bg-gray-100 flex items-center gap-2"

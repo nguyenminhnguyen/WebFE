@@ -1,26 +1,26 @@
-import React from "react";
-import SearchUI from "./SearchUI";
-import FeatureSection from "./FeatureSection";
-import ContentBox from "./contentbox";
-import Footer from "../../components/layout/footer";
+import React from 'react';
+import SearchUI from './SearchUI';
+import FeatureSection from './FeatureSection';
+import ContentBox from './contentbox';
+import Footer from '../../components/layout/footer';
 
 function HomePage() {
   const categories = [
-    { title: "Designer", subtitle: "(0 freelancer)" },
-    { title: "Tiếp thị số", subtitle: "(0 freelancer)" },
-    { title: "Content Writer", subtitle: "(5 freelancers)" },
-    { title: "Dịch thuật", subtitle: "(2 freelancers)" },
-    { title: "Tư vấn kinh doanh", subtitle: "(3 freelancers)" },
-    { title: "Phát triển ứng dụng", subtitle: "(1 freelancer)" },
-    { title: "Nhiếp ảnh", subtitle: "(4 freelancers)" },
-    { title: "Biên tập video", subtitle: "(0 freelancers)" },
+    { title: 'Designer', subtitle: '(0 freelancer)' },
+    { title: 'Tiếp thị số', subtitle: '(0 freelancer)' },
+    { title: 'Content Writer', subtitle: '(5 freelancers)' },
+    { title: 'Dịch thuật', subtitle: '(2 freelancers)' },
+    { title: 'Tư vấn kinh doanh', subtitle: '(3 freelancers)' },
+    { title: 'Phát triển ứng dụng', subtitle: '(1 freelancer)' },
+    { title: 'Nhiếp ảnh', subtitle: '(4 freelancers)' },
+    { title: 'Biên tập video', subtitle: '(0 freelancers)' },
   ];
 
   const getBadge = (subtitle) => {
     const match = subtitle.match(/\d+/);
     const count = match ? parseInt(match[0]) : 0;
-    if (count >= 5) return "🔥 Hot";
-    if (count >= 3) return "⭐ Pro";
+    if (count >= 5) return '🔥 Hot';
+    if (count >= 3) return '⭐ Pro';
     return null;
   };
 
@@ -35,7 +35,7 @@ function HomePage() {
           Tìm kiếm công việc theo danh mục
         </h2>
         <p className="text-gray-600 text-base sm:text-lg font-medium">
-          Bạn đang tìm kiếm công việc?{" "}
+          Bạn đang tìm kiếm công việc?{' '}
           <span className="text-green-600 font-bold hover:text-green-500 hover:underline cursor-pointer">
             Nhấn vào đây
           </span>

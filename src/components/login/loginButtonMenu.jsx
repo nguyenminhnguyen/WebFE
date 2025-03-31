@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import {useNavigate} from 'react-router-dom'
+import React, { useState } from 'react';
+import {useNavigate} from 'react-router-dom';
 
 export default function Login() {
   const navigate = useNavigate();
 
   const handleGoLogin = () => {
-    console.log('redirecting...')
-    navigate('/login')
+    console.log('redirecting...');
+    navigate('/login');
   };
   return (
     <>

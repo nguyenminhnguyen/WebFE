@@ -1,40 +1,40 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import NavBar from "./navbar";
-import Login from "../login/loginButtonMenu";
-import Register from "../../services/auth/register/registerButtonMenu";
-import { FaUserCircle } from "react-icons/fa";
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import NavBar from './navbar';
+import Login from '../login/loginButtonMenu';
+import Register from '../../services/auth/register/registerButtonMenu';
+import { FaUserCircle } from 'react-icons/fa';
 
 export default function NavBarWrapper() {
   const location = useLocation();
 
   const isMinimalNav =
-    location.pathname === "/login" ||
-    location.pathname === "/register" ||
-    location.pathname === "/register/freelancer" ||
-    location.pathname === "/register/employer";
+    location.pathname === '/login' ||
+    location.pathname === '/register' ||
+    location.pathname === '/register/freelancer' ||
+    location.pathname === '/register/employer';
 
-  const isFreelancerPage = location.pathname.startsWith("/freelancer");
-  const isEmployerPage = location.pathname.startsWith("/employer");
+  const isFreelancerPage = location.pathname.startsWith('/freelancer');
+  const isEmployerPage = location.pathname.startsWith('/employer');
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const freelancerMenu = [
-    { label: "Việc làm của bạn", path: "#" },
-    { label: "Tài chính", path: "#" },
-    { label: "Chat", path: "#" },
+    { label: 'Việc làm của bạn', path: '#' },
+    { label: 'Tài chính', path: '#' },
+    { label: 'Chat', path: '#' },
   ];
 
   const employerMenu = [
-    { label: "Dự án của bạn", path: "#" },
-    { label: "Báo cáo", path: "#" },
-    { label: "Chat", path: "#" },
+    { label: 'Dự án của bạn', path: '#' },
+    { label: 'Báo cáo', path: '#' },
+    { label: 'Chat', path: '#' },
   ];
 
   const defaultMenu = [
-    { label: "Trang chủ", path: "/" },
-    { label: "Tuyển dụng", path: "/employer" },
-    { label: "Freelancer", path: "/freelancer" },
+    { label: 'Trang chủ', path: '/' },
+    { label: 'Tuyển dụng', path: '/employer' },
+    { label: 'Freelancer', path: '/freelancer' },
   ];
 
   const profileDropdown = (

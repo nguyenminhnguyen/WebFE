@@ -1,35 +1,35 @@
-import React, { useState } from "react";
-import { FaSearch, FaStar } from "react-icons/fa";
+import React, { useState } from 'react';
+import { FaSearch, FaStar } from 'react-icons/fa';
 
 const freelancers = [
   {
     id: 1,
-    name: "Nguyen Van A",
-    title: "Frontend Developer",
-    avatar: "/avatar1.png",
-    skills: ["React", "Tailwind", "JavaScript"],
+    name: 'Nguyen Van A',
+    title: 'Frontend Developer',
+    avatar: '/avatar1.png',
+    skills: ['React', 'Tailwind', 'JavaScript'],
     rating: 4.8,
-    description: "Chuyên phát triển UI/UX mượt mà với React và Tailwind CSS.",
+    description: 'Chuyên phát triển UI/UX mượt mà với React và Tailwind CSS.',
   },
   {
     id: 2,
-    name: "Tran Thi B",
-    title: "AI Engineer",
-    avatar: "/avatar2.png",
-    skills: ["Python", "Machine Learning", "TensorFlow"],
+    name: 'Tran Thi B',
+    title: 'AI Engineer',
+    avatar: '/avatar2.png',
+    skills: ['Python', 'Machine Learning', 'TensorFlow'],
     rating: 4.9,
-    description: "Xây dựng hệ thống đề xuất thông minh và chatbot AI.",
+    description: 'Xây dựng hệ thống đề xuất thông minh và chatbot AI.',
   },
   // Thêm freelancer khác nếu cần
 ];
 
 export default function FreelancerLists() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   const filtered = freelancers.filter(
     (f) =>
       f.name.toLowerCase().includes(search.toLowerCase()) ||
-      f.skills.join(" ").toLowerCase().includes(search.toLowerCase())
+      f.skills.join(' ').toLowerCase().includes(search.toLowerCase())
   );
 
   return (

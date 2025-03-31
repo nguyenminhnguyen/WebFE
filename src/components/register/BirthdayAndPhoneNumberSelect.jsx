@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import "react-datepicker/dist/react-datepicker.css";
-import { FaRegCalendarAlt, FaPhone } from "react-icons/fa";
+import { useState, useEffect } from 'react';
+import 'react-datepicker/dist/react-datepicker.css';
+import { FaRegCalendarAlt, FaPhone } from 'react-icons/fa';
 export default function BirthAndPhoneSelect({ selectedDate, setSelectedDate, phone, setPhone }) {
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [minDate, setMinDate] = useState(new Date());
   const [maxDate, setMaxDate] = useState(new Date());
   
@@ -29,18 +29,18 @@ export default function BirthAndPhoneSelect({ selectedDate, setSelectedDate, pho
       setPhone(value); // Cập nhật giá trị
     }
     if (value.length > 0 && (value.length < 10 || value.length > 12)) {
-      setError("Số điện thoại phải có từ 10 đến 12 số");
+      setError('Số điện thoại phải có từ 10 đến 12 số');
     } else {
-      setError("");
+      setError('');
     }
   };
   const handleDateChange = (e) => {
     const date = new Date(e.target.value);
     if (date < minDate || date > maxDate) {
-      setError("Ngày sinh phải trong khoảng từ 18 đến 99 tuổi.");
+      setError('Ngày sinh phải trong khoảng từ 18 đến 99 tuổi.');
       setSelectedDate(null);
     } else {
-      setError("");
+      setError('');
       setSelectedDate(e.target.value);
     }
   };
@@ -52,7 +52,7 @@ export default function BirthAndPhoneSelect({ selectedDate, setSelectedDate, pho
         <input
           type="date"
           name="birthday"
-          value={selectedDate || ""}
+          value={selectedDate || ''}
           onChange={handleDateChange}
           className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 transition text-sm"
           required

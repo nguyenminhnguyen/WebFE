@@ -1,19 +1,19 @@
-import React from "react";
-import AuthLayout from "../AuthLayout";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaEnvelope, FaLock } from "react-icons/fa";
-import SocialButtons from "./social-button";
+import React from 'react';
+import AuthLayout from '../AuthLayout';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { FaEnvelope, FaLock } from 'react-icons/fa';
+import SocialButtons from './social-button';
 
 export default function AuthLogin() {
   const navigate = useNavigate();
   const location = useLocation();
-  const dest = new URLSearchParams(location.search).get("dest");
+  const dest = new URLSearchParams(location.search).get('dest');
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // 👇 Giả sử đăng nhập thành công và lấy user role từ API
-    const userRole = "freelancer"; // hoặc "employer"
+    const userRole = 'freelancer'; // hoặc "employer"
     // const userRole = "employer"; // hoặc "employer"
 
     // 👉 Nếu có dest (bị redirect từ ProtectedRoute), ưu tiên nó
@@ -22,12 +22,12 @@ export default function AuthLogin() {
     }
 
     // 👉 Nếu không có dest, redirect theo vai trò
-    if (userRole === "freelancer") {
-      return navigate("/freelancer/dashboard");
-    } else if (userRole === "employer") {
-      return navigate("/employer/dashboard");
+    if (userRole === 'freelancer') {
+      return navigate('/freelancer/dashboard');
+    } else if (userRole === 'employer') {
+      return navigate('/employer/dashboard');
     } else {
-      return navigate("/"); // fallback
+      return navigate('/'); // fallback
     }
   };
 
@@ -86,7 +86,7 @@ export default function AuthLogin() {
 
         {/* Redirect to Register */}
         <p className="text-center text-sm text-gray-600">
-          Bạn chưa có tài khoản?{" "}
+          Bạn chưa có tài khoản?{' '}
           <Link
             to="/register"
             className="text-green-600 font-semibold hover:underline"

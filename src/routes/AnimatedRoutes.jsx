@@ -1,20 +1,20 @@
-import React from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import React from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 
-import AnimatedPage from "../components/animated_pages"; // dùng bản chuẩn đã style
-import NavBarWrapper from "../components/NavBarWrapper";
-import ProtectedRoute from "./ProtectedRoutes";
+import AnimatedPage from '../components/animated_pages'; // dùng bản chuẩn đã style
+import NavBarWrapper from '../components/NavBarWrapper';
+import ProtectedRoute from './ProtectedRoutes';
 
 // Pages
-import HomePage from "../services/pages/HomePage/HomePage";
-import RegisterHandle from "../services/auth/register/RegisterHandle";
-import LoginHandle from "../services/auth/login/LoginHandle";
-import ProjectsPage from "../services/pages/HomePage/FreelancerLists";
-import ProjectsList from "../services/pages/afterLogin_freelancer/ProjectsList";
-import ClientRegister from "../services/auth/register/EmployerRegister";
-import FreelancerRegister from "../services/auth/register/FreelancerRegister";
-import Freelancer from "../services/pages/afterLogin_freelancer/freelancer";
+import HomePage from '../services/pages/HomePage/HomePage';
+import RegisterHandle from '../services/auth/register/RegisterHandle';
+import LoginHandle from '../services/auth/login/LoginHandle';
+import ProjectsPage from '../services/pages/HomePage/FreelancerLists';
+import ProjectsList from '../services/pages/afterLogin_freelancer/ProjectsList';
+import ClientRegister from '../services/auth/register/EmployerRegister';
+import FreelancerRegister from '../services/auth/register/FreelancerRegister';
+import Freelancer from '../services/pages/afterLogin_freelancer/freelancer';
 
 export default function AnimatedRoutes() {
   const location = useLocation();

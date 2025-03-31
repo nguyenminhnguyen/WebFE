@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import { FaUserTie, FaBriefcase } from "react-icons/fa";
+import React, { useState } from 'react';
+import { FaUserTie, FaBriefcase } from 'react-icons/fa';
 
 const options = [
   {
-    label: "Freelancer",
+    label: 'Freelancer',
     icon: <FaUserTie className="text-green-600 text-lg mr-2" />,
-    description: "Tìm chuyên gia phù hợp cho dự án của bạn",
+    description: 'Tìm chuyên gia phù hợp cho dự án của bạn',
   },
   {
-    label: "Công việc",
+    label: 'Công việc',
     icon: <FaBriefcase className="text-green-600 text-lg mr-2" />,
-    description: "Tìm kiếm các công việc đang tuyển",
+    description: 'Tìm kiếm các công việc đang tuyển',
   },
 ];
 

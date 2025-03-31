@@ -1,10 +1,10 @@
-import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 
 // Giả lập kiểm tra đăng nhập (thay bằng context hoặc redux thật sau này)
-const isAuthenticated = () => {
-  return !localStorage.getItem("token"); // hoặc check auth state
-};
+// const isAuthenticated = () => {
+//   return !localStorage.getItem('token'); // hoặc check auth state
+// };
 
 export default function ProtectedRoute({ children }) {
   const location = useLocation();

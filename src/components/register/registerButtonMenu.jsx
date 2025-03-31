@@ -1,13 +1,13 @@
-import React, {useState} from "react";
-import {useNavigate} from 'react-router-dom'
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 export default function Register()
 {
   const navigate = useNavigate();
 
   const handleGoRegister = () => {
-    console.log('redirecting...')
-    navigate('/register')
+    console.log('redirecting...');
+    navigate('/register');
   };
     return(
         <>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   FaUser,
   FaLock,
@@ -6,20 +6,20 @@ import {
   FaBriefcase,
   FaCamera,
   FaIdCard,
-} from "react-icons/fa";
-import BirthAndPhoneSelect from "../../../components/register/BirthdayAndPhoneNumberSelect";
-import { useNavigate } from "react-router-dom";
-import AuthLayout from "../AuthLayout";
+} from 'react-icons/fa';
+import BirthAndPhoneSelect from '../../../components/register/BirthdayAndPhoneNumberSelect';
+import { useNavigate } from 'react-router-dom';
+import AuthLayout from '../AuthLayout';
 export default function FreelancerRegister({ onBack }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    fname: "",
-    birthday: "",
-    phone: "",
-    experience: "",
-    email: "",
+    username: '',
+    password: '',
+    fname: '',
+    birthday: '',
+    phone: '',
+    experience: '',
+    email: '',
     avatar: null,
   });
 
@@ -28,7 +28,7 @@ export default function FreelancerRegister({ onBack }) {
     if (onBack) {
       onBack(); // Nếu có onBack từ props, gọi nó
     } else {
-      navigate("/register"); // Nếu không, điều hướng về trang chọn vai trò
+      navigate('/register'); // Nếu không, điều hướng về trang chọn vai trò
     }
   };
   const handleChange = (e) => {
@@ -47,19 +47,19 @@ export default function FreelancerRegister({ onBack }) {
     }
     try {
       const response = await fetch(
-        "http://localhost:5000/api/reg/freelancerRegister",
+        'http://localhost:5000/api/reg/freelancerRegister',
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         }
       );
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Đăng ký thất bại!");
+      if (!response.ok) throw new Error(data.message || 'Đăng ký thất bại!');
 
-      alert("Đăng ký thành công!");
-      navigate("/login");
+      alert('Đăng ký thành công!');
+      navigate('/login');
     } catch (error) {
       alert(error.message);
     }
@@ -69,7 +69,7 @@ export default function FreelancerRegister({ onBack }) {
     <AuthLayout>
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-2 text-gray-800">
-          {step === 1 ? "Đăng ký Freelancer" : "Hoàn tất hồ sơ"}
+          {step === 1 ? 'Đăng ký Freelancer' : 'Hoàn tất hồ sơ'}
         </h1>
         <p
           onClick={handleBack}
@@ -179,7 +179,7 @@ export default function FreelancerRegister({ onBack }) {
             type="submit"
             className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition font-semibold shadow-md"
           >
-            {step === 1 ? "Tiếp tục" : "Tạo tài khoản"}
+            {step === 1 ? 'Tiếp tục' : 'Tạo tài khoản'}
           </button>
         </form>
       </div>

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProjectDetailModal({ project, onClose }) {
-  const [tab, setTab] = useState("details");
+  const [tab, setTab] = useState('details');
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     if (project) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     }
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = '';
     };
   }, []);
 
@@ -23,14 +23,14 @@ export default function ProjectDetailModal({ project, onClose }) {
   };
 
   const tabs = [
-    { key: "details", label: "Chi tiết" },
-    { key: "requirements", label: "Yêu cầu" },
-    { key: "reviews", label: "Đánh giá" },
+    { key: 'details', label: 'Chi tiết' },
+    { key: 'requirements', label: 'Yêu cầu' },
+    { key: 'reviews', label: 'Đánh giá' },
   ];
 
   const renderTabContent = () => {
     switch (tab) {
-      case "details":
+      case 'details':
         return (
           <div className="space-y-4 text-sm text-gray-600">
             <p>{project.description}</p>
@@ -44,18 +44,18 @@ export default function ProjectDetailModal({ project, onClose }) {
             </p>
           </div>
         );
-      case "requirements":
+      case 'requirements':
         return (
           <div className="space-y-2 text-sm text-gray-600">
             <ul className="list-disc list-inside">
-              <li>Thành thạo {project.skills.join(", ")}</li>
+              <li>Thành thạo {project.skills.join(', ')}</li>
               <li>Kỹ năng giao tiếp và làm việc nhóm</li>
               <li>Đảm bảo đúng deadline và chất lượng</li>
               <li>Portfolio dự án liên quan</li>
             </ul>
           </div>
         );
-      case "reviews":
+      case 'reviews':
         return (
           <div className="space-y-3 text-sm text-gray-600">
             <p>⭐ 4.9/5 - 124 lượt đánh giá</p>
@@ -86,10 +86,10 @@ export default function ProjectDetailModal({ project, onClose }) {
 
           {/* Modal */}
           <motion.div
-            initial={{ x: "100%" }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "tween", duration: 0.4 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.4 }}
             className="fixed top-0 right-0 w-full sm:w-[540px] md:w-[600px] lg:w-[700px] h-full bg-white border-l border-gray-200 shadow-xl z-50 overflow-y-auto p-8"
             onClick={(e) => e.stopPropagation()}
           >
@@ -105,7 +105,7 @@ export default function ProjectDetailModal({ project, onClose }) {
             <div className="mt-2 text-sm text-gray-600 space-y-1">
               <p><strong>Ngân sách:</strong> {project.budget}</p>
               <p><strong>Thời gian:</strong> {project.duration}</p>
-              <p><strong>Kỹ năng:</strong> {project.skills.join(", ")}</p>
+              <p><strong>Kỹ năng:</strong> {project.skills.join(', ')}</p>
               <p className="text-sm text-gray-400">Đăng {project.postedAt}</p>
             </div>
 
@@ -117,8 +117,8 @@ export default function ProjectDetailModal({ project, onClose }) {
                   onClick={() => setTab(t.key)}
                   className={`pb-2 text-sm font-medium ${
                     tab === t.key
-                      ? "border-b-2 border-green-500 text-green-600"
-                      : "text-gray-500 hover:text-gray-700"
+                      ? 'border-b-2 border-green-500 text-green-600'
+                      : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   {t.label}

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-import { FaBriefcase, FaUserTie } from "react-icons/fa";
+import { FaBriefcase, FaUserTie } from 'react-icons/fa';
 
 function DualButton({ onClickLeft, onClickRight, isLeftActive }) {
   return (
@@ -9,7 +9,7 @@ function DualButton({ onClickLeft, onClickRight, isLeftActive }) {
       {/* Animated indicator */}
       <div
         className={`absolute top-1 bottom-1 left-1 w-1/2 bg-green-500 rounded-full transition-all duration-300 ease-in-out z-0 ${
-          !isLeftActive ? "translate-x-full" : ""
+          !isLeftActive ? 'translate-x-full' : ''
         }`}
       ></div>
 
@@ -17,7 +17,7 @@ function DualButton({ onClickLeft, onClickRight, isLeftActive }) {
       <button
         onClick={onClickLeft}
         className={`relative z-10 flex items-center justify-center gap-2 w-1/2 px-4 py-2 text-sm md:text-base font-medium rounded-full transition-all duration-300
-          ${isLeftActive ? "text-white" : "text-white/70"}`}
+          ${isLeftActive ? 'text-white' : 'text-white/70'}`}
       >
         <FaBriefcase className="text-base" />
         <span className="hidden sm:inline">Khách hàng</span>
@@ -27,7 +27,7 @@ function DualButton({ onClickLeft, onClickRight, isLeftActive }) {
       <button
         onClick={onClickRight}
         className={`relative z-10 flex items-center justify-center gap-2 w-1/2 px-4 py-2 text-sm md:text-base font-medium rounded-full transition-all duration-300
-          ${!isLeftActive ? "text-white" : "text-white/70"}`}
+          ${!isLeftActive ? 'text-white' : 'text-white/70'}`}
       >
         <FaUserTie className="text-base" />
         <span className="hidden sm:inline">Freelancer</span>
@@ -38,7 +38,7 @@ function DualButton({ onClickLeft, onClickRight, isLeftActive }) {
 
 
 
-const cardClasses = "bg-gray-800 bg-opacity-60 text-white p-2 rounded-3xl text-sm";
+const cardClasses = 'bg-gray-800 bg-opacity-60 text-white p-2 rounded-3xl text-sm';
 
 function FeatureSection() {
   const [showLeftDiv, setShowLeftDiv] = useState(true);
