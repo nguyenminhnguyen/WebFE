@@ -23,7 +23,7 @@ const freelancers = [
   // Thêm freelancer khác nếu cần
 ];
 
-export default function FreelancerPage() {
+export default function FreelancerLists() {
   const [search, setSearch] = useState("");
 
   const filtered = freelancers.filter(

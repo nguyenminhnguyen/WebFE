@@ -1,5 +1,5 @@
 import React from "react";
-import ProjectsList from "../../components/freelancer/ProjectsList";
+import ProjectsList from "../../components/afterLogin_freelancer/ProjectsList";
 
 export default function Freelancer() {
   return (

@@ -1,8 +1,8 @@
 import React from "react";
-import SearchUI from "../../components/content-box/SearchUI";
-import FeatureSection from "../../components/content-box/FeatureSection";
-import ContentBox from "../../components/content-box/contentbox";
-import Footer from "../../components/content-box/footer";
+import SearchUI from "./SearchUI";
+import FeatureSection from "./FeatureSection";
+import ContentBox from "./contentbox";
+import Footer from "../../components/layout/footer";
 
 function HomePage() {
   const categories = [

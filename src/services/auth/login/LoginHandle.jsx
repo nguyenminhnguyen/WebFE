@@ -1,36 +1,34 @@
 import React from "react";
-import AuthLayout from "../../pages/HomePage_AuthPage/AuthLayout";
+import AuthLayout from "../AuthLayout";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import {
-  FaEnvelope,
-  FaLock,
-  FaGoogle,
-  FaFacebookF,
-  FaLinkedinIn,
-} from "react-icons/fa";
-import SocialButtons from "../content-box/social-button";
+import { FaEnvelope, FaLock } from "react-icons/fa";
+import SocialButtons from "./social-button";
 
 export default function AuthLogin() {
   const navigate = useNavigate();
   const location = useLocation();
-  const dest = new URLSearchParams(location.search).get("dest") || "/";
+  const dest = new URLSearchParams(location.search).get("dest");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 👇 Giả sử bạn lấy thông tin người dùng từ form hoặc API
-    const userRole = "freelancer"; // Tạm gán, thực tế sẽ lấy từ API
+    // 👇 Giả sử đăng nhập thành công và lấy user role từ API
+    const userRole = "freelancer"; // hoặc "employer"
+    // const userRole = "employer"; // hoặc "employer"
 
-    // 👉 Xác định đường dẫn chuyển hướng
-    let targetPath = "/";
-    if (userRole === "freelancer") {
-      targetPath = "/login/freelancer";
-    } else if (userRole === "employer") {
-      targetPath = "/login/employer";
+    // 👉 Nếu có dest (bị redirect từ ProtectedRoute), ưu tiên nó
+    if (dest) {
+      return navigate(dest);
     }
 
-    // Chuyển hướng người dùng
-    navigate(targetPath);
+    // 👉 Nếu không có dest, redirect theo vai trò
+    if (userRole === "freelancer") {
+      return navigate("/freelancer/dashboard");
+    } else if (userRole === "employer") {
+      return navigate("/employer/dashboard");
+    } else {
+      return navigate("/"); // fallback
+    }
   };
 
   const handleSocialLogin = (provider) => {
@@ -90,7 +88,7 @@ export default function AuthLogin() {
         <p className="text-center text-sm text-gray-600">
           Bạn chưa có tài khoản?{" "}
           <Link
-            to={`/register`}
+            to="/register"
             className="text-green-600 font-semibold hover:underline"
           >
             Đăng ký ngay

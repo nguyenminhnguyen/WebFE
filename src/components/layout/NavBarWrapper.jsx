@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import NavBar from "./navbar";
-import Login from "../auth/loginButtonMenu";
-import Register from "../auth/registerButtonMenu";
+import Login from "../login/loginButtonMenu";
+import Register from "../../services/auth/register/registerButtonMenu";
 import { FaUserCircle } from "react-icons/fa";
 
 export default function NavBarWrapper() {
@@ -14,7 +14,8 @@ export default function NavBarWrapper() {
     location.pathname === "/register/freelancer" ||
     location.pathname === "/register/employer";
 
-  const isFreelancerPage = location.pathname.startsWith("/freelancer") || location.pathname === "/login/freelancer";
+  const isFreelancerPage = location.pathname.startsWith("/freelancer");
+  const isEmployerPage = location.pathname.startsWith("/employer");
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -22,6 +23,18 @@ export default function NavBarWrapper() {
     { label: "Việc làm của bạn", path: "#" },
     { label: "Tài chính", path: "#" },
     { label: "Chat", path: "#" },
+  ];
+
+  const employerMenu = [
+    { label: "Dự án của bạn", path: "#" },
+    { label: "Báo cáo", path: "#" },
+    { label: "Chat", path: "#" },
+  ];
+
+  const defaultMenu = [
+    { label: "Trang chủ", path: "/" },
+    { label: "Tuyển dụng", path: "/employer" },
+    { label: "Freelancer", path: "/freelancer" },
   ];
 
   const profileDropdown = (
@@ -49,30 +62,31 @@ export default function NavBarWrapper() {
     </div>
   );
 
+  const getMenuItems = () => {
+    if (isMinimalNav) return [];
+    if (isFreelancerPage) return freelancerMenu;
+    if (isEmployerPage) return employerMenu;
+    return defaultMenu;
+  };
+
+  const getAuthButtons = () => {
+    if (isMinimalNav) return null;
+    if (isFreelancerPage || isEmployerPage) return profileDropdown;
+    return (
+      <>
+        <Login />
+        <Register />
+      </>
+    );
+  };
+
   return (
     <NavBar
       showLogo
       showSearch={!isMinimalNav}
-      menuItems={
-        isMinimalNav
-          ? []
-          : isFreelancerPage
-          ? freelancerMenu
-          : [
-              { label: "Trang chủ", path: "/" },
-              { label: "Dự án", path: "/projects" },
-              { label: "Freelancer", path: "/freelancer" },
-            ]
-      }
+      menuItems={getMenuItems()}
       showAuthButtons={!isMinimalNav}
-      authButtons={
-        isMinimalNav ? null : isFreelancerPage ? profileDropdown : (
-          <>
-            <Login />
-            <Register />
-          </>
-        )
-      }
+      authButtons={getAuthButtons()}
     />
   );
 }

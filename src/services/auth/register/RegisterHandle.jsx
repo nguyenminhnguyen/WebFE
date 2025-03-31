@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import AuthLayout from "../../pages/HomePage_AuthPage/AuthLayout";
+import AuthLayout from "../AuthLayout";
 import {
   FaUserTie,
   FaBriefcase,
@@ -8,7 +8,7 @@ import {
   FaLock,
   FaEnvelope,
 } from "react-icons/fa";
-import SocialButtons from "../content-box/social-button";
+import SocialButtons from "../login/social-button";
 
 export default function AuthRegister() {
   const navigate = useNavigate();

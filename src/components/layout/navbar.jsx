@@ -17,7 +17,7 @@ export default function NavBar({
 
   const handleSearch = (e) => {
     e.preventDefault();
-    const path = searchType === "freelancer" ? "/freelancer" : "/jobs";
+    const path = searchType === "freelancer" ? "/freelancer" : "/employer";
     window.location.href = `${path}?search=${searchTerm}`;
   };
 

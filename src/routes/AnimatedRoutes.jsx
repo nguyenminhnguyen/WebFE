@@ -3,17 +3,18 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 
 import AnimatedPage from "../components/animated_pages"; // dùng bản chuẩn đã style
-import NavBarWrapper from "../components/content-box/navbarWrapper";
+import NavBarWrapper from "../components/NavBarWrapper";
+import ProtectedRoute from "./ProtectedRoutes";
 
 // Pages
-import HomePage from "../pages/HomePage_AuthPage/HomePage";
-import AuthRegister from "../components/auth/AuthRegister";
-import AuthLogin from "../components/auth/AuthLogin";
-import ProjectsPage from "../pages/HomePage_AuthPage/ProjectsPage";
-import ProjectsList from "../components/freelancer/ProjectsList";
-import ClientRegister from "../components/auth/register/EmployerRegister";
-import FreelancerRegister from "../components/auth/register/FreelancerRegister";
-import Freelancer from "../pages/afterLogin_freelancer/freelancer";
+import HomePage from "../services/pages/HomePage/HomePage";
+import RegisterHandle from "../services/auth/register/RegisterHandle";
+import LoginHandle from "../services/auth/login/LoginHandle";
+import ProjectsPage from "../services/pages/HomePage/FreelancerLists";
+import ProjectsList from "../services/pages/afterLogin_freelancer/ProjectsList";
+import ClientRegister from "../services/auth/register/EmployerRegister";
+import FreelancerRegister from "../services/auth/register/FreelancerRegister";
+import Freelancer from "../services/pages/afterLogin_freelancer/freelancer";
 
 export default function AnimatedRoutes() {
   const location = useLocation();
@@ -38,7 +39,7 @@ export default function AnimatedRoutes() {
             <AnimatedPage>
               <NavBarWrapper />
               <div className="mx-[10vw]">
-                <AuthRegister />
+                <RegisterHandle />
               </div>
             </AnimatedPage>
           }
@@ -71,13 +72,13 @@ export default function AnimatedRoutes() {
             <AnimatedPage>
               <NavBarWrapper />
               <div className="mx-[10vw]">
-                <AuthLogin />
+                <LoginHandle />
               </div>
             </AnimatedPage>
           }
         />
         <Route
-          path="/projects"
+          path="/employer"
           element={
             <AnimatedPage>
               <NavBarWrapper />
@@ -110,14 +111,30 @@ export default function AnimatedRoutes() {
           }
         />
         <Route
-          path="/login/freelancer"
+          path="/freelancer/dashboard"
           element={
-            <AnimatedPage>
-              <NavBarWrapper />
-              <div className="mx-[10vw]">
-                <Freelancer />
-              </div>
-            </AnimatedPage>
+            <ProtectedRoute>
+              <AnimatedPage>
+                <NavBarWrapper />
+                <div className="mx-[10vw]">
+                  <Freelancer />
+                </div>
+              </AnimatedPage>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/employer/dashboard"
+          element={
+            <ProtectedRoute>
+              <AnimatedPage>
+                <NavBarWrapper />
+                <div className="mx-[10vw]">
+                  <Freelancer />
+                </div>
+              </AnimatedPage>
+            </ProtectedRoute>
           }
         />
       </Routes>

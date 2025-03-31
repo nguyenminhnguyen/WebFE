@@ -7,7 +7,7 @@ import {
   FaMapMarkerAlt,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "../../../pages/HomePage_AuthPage/AuthLayout";
+import AuthLayout from "../AuthLayout";
 export default function ClientRegister({ onBack }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
