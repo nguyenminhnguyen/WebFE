@@ -17,9 +17,12 @@ export default function AuthRegister() {
   return (
     <AuthLayout>
       <>
-        <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
+        <h1 className="text-2xl font-bold text-center text-gray-800">
           Bạn là ai?
         </h1>
+        <p 
+        onClick={() => navigate("/")}
+        className="text-gray-500 mb-2 mt-4 cursor-pointer hover:underline ">← Quay về trang chủ</p>
         <div className="space-y-4">
           {/* Freelancer */}
           <button

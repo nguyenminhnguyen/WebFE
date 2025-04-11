@@ -25,6 +25,10 @@ export default function FreelancerRegister({ onBack }) {
 
   const navigate = useNavigate();
   const handleBack = () => {
+    if(step===2){
+      setStep(1);
+      return;
+    }
     if (onBack) {
       onBack(); // Nếu có onBack từ props, gọi nó
     } else {
@@ -47,7 +51,7 @@ export default function FreelancerRegister({ onBack }) {
     }
     try {
       const response = await fetch(
-        'http://localhost:5000/api/reg/freelancerRegister',
+        'http://localhost:3000/api/freelancer/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -68,14 +72,14 @@ export default function FreelancerRegister({ onBack }) {
   return (
     <AuthLayout>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2 text-gray-800">
+        <h1 className="text-2xl font-bold text-gray-800">
           {step === 1 ? 'Đăng ký Freelancer' : 'Hoàn tất hồ sơ'}
         </h1>
         <p
           onClick={handleBack}
-          className="text-sm text-gray-400 mt-2 hover:underline cursor-pointer"
+          className="text-sm text-gray-400 mt-4 mb-2 hover:underline cursor-pointer"
         >
-          ← Quay lại chọn vai trò
+          {step===1 ? '← Quay lại chọn vai trò' : '← Trở về'}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

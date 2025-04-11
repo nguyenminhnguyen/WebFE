@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { FaSearch, FaUserTie, FaBriefcase } from 'react-icons/fa';
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaSearch, FaUserTie, FaBriefcase } from "react-icons/fa";
 
 export default function NavBar({
   showLogo = true,
@@ -9,30 +9,44 @@ export default function NavBar({
   showAuthButtons = true,
   authButtons = null,
 }) {
+  const navigate = useNavigate();
   const location = useLocation();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchType, setSearchType] = useState('freelancer');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchType, setSearchType] = useState("freelancer");
   const [showDropdown, setShowDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    const path = searchType === 'freelancer' ? '/freelancer' : '/employer';
+    const path = searchType === "freelancer" ? "/freelancer" : "/employer";
     window.location.href = `${path}?search=${searchTerm}`;
   };
-
+  const handleLogoClick = () => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    if (!token) {
+      navigate("/"); // Chưa đăng nhập → về trang chủ
+    } else if (role === "freelancer") {
+      navigate("/freelancer/dashboard"); // Freelancer → Điều hướng đến Dashboard
+    } else if (role === "employer") {
+      navigate("/employer/dashboard"); // Employer → Điều hướng đến Dashboard
+    } else {
+      navigate("/"); // Nếu role không hợp lệ → về trang chủ
+    }
+  };
   return (
     <nav className="bg-white px-4 py-3 sticky top-0 z-30 border-b border-gray-200 shadow-sm">
       <div className="max-w-[1400px] mx-auto flex flex-wrap items-center justify-between">
         {/* Logo */}
         {showLogo && (
           <div className="flex items-center space-x-2">
-            <Link to="/" className="flex items-center space-x-2">
               <img src="/plain.svg" alt="Logo" className="w-8 h-8" />
-              <h1 className="text-xl md:text-2xl font-bold hover:text-green-800 transition duration-200 whitespace-nowrap">
+              <h1
+                onClick={handleLogoClick}
+                className="text-xl md:text-2xl font-bold hover:text-green-800 transition duration-200 whitespace-nowrap"
+              >
                 Freelancer AI
               </h1>
-            </Link>
           </div>
         )}
 
@@ -46,7 +60,7 @@ export default function NavBar({
               <input
                 type="text"
                 placeholder={`Tìm kiếm ${
-                  searchType === 'freelancer' ? 'freelancer' : 'công việc'
+                  searchType === "freelancer" ? "freelancer" : "công việc"
                 }...`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -58,14 +72,14 @@ export default function NavBar({
                 onClick={() => setShowDropdown((prev) => !prev)}
                 className="absolute right-1 top-1 bottom-1 px-3 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
               >
-                {searchType === 'freelancer' ? 'Freelancer' : 'Công việc'}
+                {searchType === "freelancer" ? "Freelancer" : "Công việc"}
               </button>
               {showDropdown && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow z-10 text-sm">
                   <button
                     type="button"
                     onClick={() => {
-                      setSearchType('freelancer');
+                      setSearchType("freelancer");
                       setShowDropdown(false);
                     }}
                     className="w-full px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
@@ -76,7 +90,7 @@ export default function NavBar({
                   <button
                     type="button"
                     onClick={() => {
-                      setSearchType('job');
+                      setSearchType("job");
                       setShowDropdown(false);
                     }}
                     className="w-full px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
@@ -109,7 +123,12 @@ export default function NavBar({
           className="md:hidden text-gray-700"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
