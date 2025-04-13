@@ -43,7 +43,7 @@ export default function AuthLogin() {
       }
 
       // 👉 Lưu token và role vào localStorage
-      localStorage.setItem("token", data.user.access_token);
+      localStorage.setItem("token", data.access_token);
       localStorage.setItem("role", data.user.role);
 
       // 👉 Chuyển trang tùy theo vai trò hoặc dest

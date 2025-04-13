@@ -12,7 +12,8 @@ function JobPostForm() {
     skills: [],
     timeEstimation: "",
     experienceLevel: "",
-    salary: "",
+    minSalary: "",
+    maxSalary: "",
     description: "",
     location: "",
   });
@@ -23,7 +24,8 @@ function JobPostForm() {
       skills,
       timeEstimation,
       experienceLevel,
-      salary,
+      minSalary,
+      maxSalary,
       description,
       location,
     } = formData;
@@ -37,7 +39,7 @@ function JobPostForm() {
       case 4:
         return true; // Không bắt buộc
       case 5:
-        return salary !== "";
+        return minSalary !== "" && maxSalary !== "";
       case 6:
         return description !== "";
       default:
@@ -73,17 +75,22 @@ function JobPostForm() {
     const dataToSend = {
       title: formData.title,
       description: formData.description,
-      salary: formData.salary,
-      time: formData.timeEstimation,
+      minSalary: Number(formData.minSalary),
+      maxSalary: Number(formData.maxSalary),
+      timeEstimation: formData.timeEstimation,
       experienceLevel: formData.experienceLevel,
-      location: formData.location,
+      location: formData.location?.label,
+      skills: formData.skills,
     };
+    // Lấy token từ localStorage
+    const token = localStorage.getItem("token"); // Hoặc tên key bạn đang dùng
     alert(JSON.stringify(formData, null, 2));
     try {
-      const response = await fetch("https://your-api-endpoint.com/submit", {
+      const response = await fetch("http://localhost:3000/api/jobpost", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(dataToSend),
       });

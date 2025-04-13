@@ -3,21 +3,10 @@ import React, { useEffect } from "react";
 const JobStep5 = ({ formData, setFormData }) => {
   const handleRangeChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => {
-      const updated = {
-        ...prev,
-        [name]: value,
-      };
-
-      // Gộp lại thành salary nếu có đủ cả 2 giá trị
-      if (updated.salaryFrom && updated.salaryTo) {
-        updated.salary = `${updated.salaryFrom} - ${updated.salaryTo}`;
-      } else {
-        updated.salary = "";
-      }
-
-      return updated;
-    });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
@@ -40,26 +29,26 @@ const JobStep5 = ({ formData, setFormData }) => {
             <label className="text-sm font-medium text-gray-700">Từ</label>
             <input
               type="number"
-              name="salaryFrom"
-              value={formData.salaryFrom || ""}
+              name="minSalary"
+              value={formData.minSalary || ""}
               onChange={handleRangeChange}
               className="border rounded-lg p-2 w-32"
               placeholder="USD"
+              min="0"
             />
-            <span className="text-sm text-gray-500 mt-1">/USD</span>
           </div>
 
           <div className="flex flex-col ml-5">
             <label className="text-sm font-medium text-gray-700">Đến</label>
             <input
               type="number"
-              name="salaryTo"
-              value={formData.salaryTo || ""}
+              name="maxSalary"
+              value={formData.maxSalary || ""}
               onChange={handleRangeChange}
               className="border rounded-lg p-2 w-32"
               placeholder="USD"
+              min="0"
             />
-            <span className="text-sm text-gray-500 mt-1">/USD</span>
           </div>
         </div>
       </div>
