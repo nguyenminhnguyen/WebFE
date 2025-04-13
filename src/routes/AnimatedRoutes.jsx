@@ -17,6 +17,8 @@ import FreelancerRegister from "../services/auth/register/FreelancerRegister";
 import Freelancer from "../pages/afterLogin_freelancer/freelancer";
 import Employer from "../pages/afterLogin_employer/employer";
 import JobPostForm from "../pages/afterLogin_employer/JobPost";
+import PaymentReturn from "../pages/PaymentReturn";
+
 export default function AnimatedRoutes() {
   const location = useLocation();
 
@@ -140,6 +142,15 @@ export default function AnimatedRoutes() {
             <AnimatedPage>
               <NavBarWrapper />
               <JobPostForm />
+            </AnimatedPage>
+          }
+        />
+        <Route
+          path="/payment/return"
+          element={
+            <AnimatedPage>
+              <NavBarWrapper />
+              <PaymentReturn />
             </AnimatedPage>
           }
         />
