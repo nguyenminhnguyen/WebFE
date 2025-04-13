@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import JobStep from "../../components/layout/JobPost/JobStep";
 import StepNavigation from "../../components/layout/JobPost/StepNavigation";
 import AnimatedPage from "../../components/animation/animated_pages";
+
 function JobPostForm() {
   const navigate = useNavigate();
   const totalSteps = 6;
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     skills: [],
@@ -71,7 +73,7 @@ function JobPostForm() {
   };
 
   const handleSubmit = async () => {
-    // Dữ liệu không bao gồm kỹ năng
+    setIsSubmitting(true);
     const dataToSend = {
       title: formData.title,
       description: formData.description,
@@ -81,10 +83,12 @@ function JobPostForm() {
       experienceLevel: formData.experienceLevel,
       location: formData.location?.label,
       skills: formData.skills,
+      returnUrl: `${window.location.origin}/payment/return`,
+      cancelUrl: `${window.location.origin}/payment/return?cancel=true`
     };
-    // Lấy token từ localStorage
-    const token = localStorage.getItem("token"); // Hoặc tên key bạn đang dùng
-    alert(JSON.stringify(formData, null, 2));
+    
+    const token = localStorage.getItem("token");
+    
     try {
       const response = await fetch("http://localhost:3000/api/jobpost", {
         method: "POST",
@@ -96,11 +100,28 @@ function JobPostForm() {
       });
 
       const result = await response.json();
-      console.log("Dữ liệu gửi thành công:", result);
+      console.log("Response from server:", result);
+      
+      if (response.ok && result.data?.paymentUrl) {
+        // Lưu jobId vào localStorage
+        if (result.data.job?._id) {
+          localStorage.setItem("pendingJobId", result.data.job._id);
+        }
+
+        // Chuyển hướng trực tiếp đến PayPal
+        const paypalUrl = new URL(result.data.paymentUrl);
+        window.location.replace(paypalUrl.toString());
+      } else {
+        throw new Error(result.message || "Failed to create job post");
+      }
     } catch (error) {
-      console.error("Lỗi kết nối đến backend:", error);
+      console.error("Error creating job:", error);
+      alert("Có lỗi xảy ra khi tạo job: " + error.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
   return (
     <AnimatedPage>
       <div className="flex flex-col justify-between h-screen">
@@ -129,7 +150,7 @@ function JobPostForm() {
             totalSteps={totalSteps}
             onNext={handleNext}
             onBack={handleBack}
-            isNextDisabled={!isStepCompleted()}
+            isNextDisabled={!isStepCompleted() || isSubmitting}
             handleSubmit={handleSubmit}
           />
         </div>
