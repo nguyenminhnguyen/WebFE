@@ -1,33 +1,54 @@
-import React from 'react';
-import AuthLayout from '../../../components/layout/AuthLayout';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaEnvelope, FaLock } from 'react-icons/fa';
-import SocialButtons from '../../../components/login/social-button';
+import React from "react";
+import AuthLayout from "../../../components/layout/AuthLayout";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FaEnvelope, FaLock } from "react-icons/fa";
+import SocialButtons from "../../../components/login/social-button";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function AuthLogin() {
   const navigate = useNavigate();
   const location = useLocation();
-  const dest = new URLSearchParams(location.search).get('dest');
+  const { login } = useAuth();
+  const dest = new URLSearchParams(location.search).get("dest");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 👇 Giả sử đăng nhập thành công và lấy user role từ API
-    const userRole = 'freelancer'; // hoặc "employer"
-    // const userRole = "employer"; // hoặc "employer"
+    try {
+      // Giả sử đây là response từ API đăng nhập
+      const response = {
+        success: true,
+        data: {
+          user: {
+            name: "John Doe",
+            email: "john@example.com",
+            role: "freelancer",
+          },
+          freelancerId: "67f2baeaf02bec90fc68a766", // ID của freelancer
+        },
+      };
 
-    // 👉 Nếu có dest (bị redirect từ ProtectedRoute), ưu tiên nó
-    if (dest) {
-      return navigate(dest);
-    }
+      if (response.success) {
+        // Lưu thông tin đăng nhập vào context và localStorage
+        login(response.data.user, response.data.freelancerId);
 
-    // 👉 Nếu không có dest, redirect theo vai trò
-    if (userRole === 'freelancer') {
-      return navigate('/freelancer/dashboard');
-    } else if (userRole === 'employer') {
-      return navigate('/employer/dashboard');
-    } else {
-      return navigate('/'); // fallback
+        // 👉 Nếu có dest (bị redirect từ ProtectedRoute), ưu tiên nó
+        if (dest) {
+          return navigate(dest);
+        }
+
+        // 👉 Nếu không có dest, redirect theo vai trò
+        if (response.data.user.role === "freelancer") {
+          return navigate("/freelancer/dashboard");
+        } else if (response.data.user.role === "employer") {
+          return navigate("/employer/dashboard");
+        } else {
+          return navigate("/"); // fallback
+        }
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      // Hiển thị thông báo lỗi
     }
   };
 
@@ -86,7 +107,7 @@ export default function AuthLogin() {
 
         {/* Redirect to Register */}
         <p className="text-center text-sm text-gray-600">
-          Bạn chưa có tài khoản?{' '}
+          Bạn chưa có tài khoản?{" "}
           <Link
             to="/register"
             className="text-green-600 font-semibold hover:underline"

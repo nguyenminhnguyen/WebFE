@@ -1,141 +1,165 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from "react";
+import {
+  FaTimes,
+  FaMapMarkerAlt,
+  FaClock,
+  FaUserFriends,
+  FaStar,
+  FaDollarSign,
+  FaCheck,
+} from "react-icons/fa";
 
-export default function ProjectDetailModal({ project, onClose }) {
-  const [tab, setTab] = useState('details');
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    if (project) {
-      document.body.style.overflow = 'hidden';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, []);
-
-  const handleClose = () => {
-    setIsVisible(false); // bắt đầu animation exit
-  };
-
-  const handleExitComplete = () => {
-    onClose(); // sau khi animation exit xong, gọi onClose
-  };
-
-  const tabs = [
-    { key: 'details', label: 'Chi tiết' },
-    { key: 'requirements', label: 'Yêu cầu' },
-    { key: 'reviews', label: 'Đánh giá' },
-  ];
-
-  const renderTabContent = () => {
-    switch (tab) {
-      case 'details':
-        return (
-          <div className="space-y-4 text-sm text-gray-600">
-            <p>{project.description}</p>
-            <p>
-              Dự án yêu cầu sự sáng tạo cao và phối hợp tốt với team. Freelancer
-              cần chủ động cập nhật tiến độ công việc qua hệ thống.
-            </p>
-            <p>
-              Ưu tiên các bạn có kinh nghiệm làm việc từ xa, giao tiếp rõ ràng
-              và sử dụng Git thành thạo.
-            </p>
-          </div>
-        );
-      case 'requirements':
-        return (
-          <div className="space-y-2 text-sm text-gray-600">
-            <ul className="list-disc list-inside">
-              <li>Thành thạo {project.skills.join(', ')}</li>
-              <li>Kỹ năng giao tiếp và làm việc nhóm</li>
-              <li>Đảm bảo đúng deadline và chất lượng</li>
-              <li>Portfolio dự án liên quan</li>
-            </ul>
-          </div>
-        );
-      case 'reviews':
-        return (
-          <div className="space-y-3 text-sm text-gray-600">
-            <p>⭐ 4.9/5 - 124 lượt đánh giá</p>
-            <p>"Freelancer làm việc rất chuyên nghiệp, đúng deadline."</p>
-            <p>"Sản phẩm hoàn thiện vượt mong đợi, sẽ hợp tác tiếp."</p>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  if (!project) return null; // fallback an toàn, nhưng modal sẽ không dùng project === null để tắt
+const ProjectDetailModal = ({ job, onClose, onApply, isApplying }) => {
+  if (!job) return null;
 
   return (
-    <AnimatePresence onExitComplete={handleExitComplete}>
-      {isVisible && (
-        <>
-          {/* Overlay */}
-          <motion.div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={handleClose}
-          />
-
-          {/* Modal */}
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'tween', duration: 0.4 }}
-            className="fixed top-0 right-0 w-full sm:w-[540px] md:w-[600px] lg:w-[700px] h-full bg-white border-l border-gray-200 shadow-xl z-50 overflow-y-auto p-8"
-            onClick={(e) => e.stopPropagation()}
-          >
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">{job.title}</h2>
+              <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                <span className="flex items-center">
+                  <FaMapMarkerAlt className="w-4 h-4 mr-1" />
+                  {job.location}
+                </span>
+                <span className="flex items-center">
+                  <FaClock className="w-4 h-4 mr-1" />
+                  {new Date(job.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
             <button
-              onClick={handleClose}
-              className="text-gray-500 hover:text-gray-700 text-sm mb-4"
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-500"
+            >
+              <FaTimes className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          {/* Budget and Timeline */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center text-gray-500 mb-2">
+                <FaDollarSign className="w-4 h-4 mr-2" />
+                <span className="text-sm font-medium">Ngân sách</span>
+              </div>
+              <p className="text-2xl font-bold text-[#14a800]">
+                ${job.salary ? job.salary.toLocaleString() : "N/A"}
+              </p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center text-gray-500 mb-2">
+                <FaClock className="w-4 h-4 mr-2" />
+                <span className="text-sm font-medium">Thời gian</span>
+              </div>
+              <p className="text-2xl font-bold text-gray-900">
+                {job.duration || "Không xác định"}
+              </p>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Mô tả công việc
+            </h3>
+            <p className="text-gray-600 whitespace-pre-line">
+              {job.description}
+            </p>
+          </div>
+
+          {/* Skills */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Kỹ năng yêu cầu
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {(Array.isArray(job.skills)
+                ? job.skills
+                : [job.skills].filter(Boolean)
+              ).map((skill, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 text-sm text-[#14a800] bg-[#14a800]/10 rounded-full"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Requirements */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Thông tin công việc
+            </h3>
+            <ul className="list-disc list-inside text-gray-600 space-y-2">
+              {job.requirements?.map((req, index) => (
+                <li key={index}>{req}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="flex items-center text-gray-600">
+              <FaUserFriends className="w-5 h-5 mr-2" />
+              <span>{job.appliedCount || 0} ứng viên</span>
+            </div>
+            <div className="flex items-center text-gray-600">
+              <FaStar className="w-5 h-5 mr-2" />
+              <span>{job.experienceLevel}</span>
+            </div>
+            <div className="flex items-center text-gray-600">
+              <FaClock className="w-5 h-5 mr-2" />
+              <span>{job.estimatedHours || "Không xác định"} giờ</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 border-t border-gray-200">
+          <div className="flex justify-end space-x-4">
+            <button
+              onClick={onClose}
+              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Đóng
             </button>
-
-            <h2 className="text-2xl font-bold text-green-600">{project.title}</h2>
-
-            <div className="mt-2 text-sm text-gray-600 space-y-1">
-              <p><strong>Ngân sách:</strong> {project.budget}</p>
-              <p><strong>Thời gian:</strong> {project.duration}</p>
-              <p><strong>Kỹ năng:</strong> {project.skills.join(', ')}</p>
-              <p className="text-sm text-gray-400">Đăng {project.postedAt}</p>
-            </div>
-
-            {/* Tabs */}
-            <div className="mt-6 border-b border-gray-200 flex gap-6">
-              {tabs.map((t) => (
-                <button
-                  key={t.key}
-                  onClick={() => setTab(t.key)}
-                  className={`pb-2 text-sm font-medium ${
-                    tab === t.key
-                      ? 'border-b-2 border-green-500 text-green-600'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Nội dung tab */}
-            <div className="mt-6">{renderTabContent()}</div>
-
-            {/* Nút ứng tuyển */}
-            <button className="mt-10 w-full py-3 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white rounded-xl shadow-lg hover:shadow-emerald-400/50 hover:scale-105 transition-transform duration-300 text-base font-semibold">
-              Ứng tuyển ngay
+            <button
+              onClick={onApply}
+              disabled={job.hasApplied || isApplying}
+              className={`px-6 py-2 rounded-lg transition-colors ${
+                job.hasApplied
+                  ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                  : "bg-[#14a800] text-white hover:bg-[#108a00]"
+              }`}
+            >
+              {isApplying ? (
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Đang ứng tuyển...
+                </div>
+              ) : job.hasApplied ? (
+                <div className="flex items-center">
+                  <FaCheck className="mr-2" />
+                  Đã ứng tuyển
+                </div>
+              ) : (
+                "Ứng tuyển ngay"
+              )}
             </button>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-}
+};
+
+export default ProjectDetailModal;
