@@ -39,7 +39,7 @@ export default function ClientRegister({ onBack }) {
     }
     try {
       const response = await fetch(
-        'http://localhost:5000/api/reg/employerRegister',
+        'http://localhost:3000/api/employer/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -65,7 +65,7 @@ export default function ClientRegister({ onBack }) {
         </h1>
         <p
           onClick={handleBack}
-          className="text-sm text-gray-400 mt-2 hover:underline cursor-pointer"
+          className="text-sm text-gray-400 mt-2 mb-2 hover:underline cursor-pointer"
         >
           ← Quay lại chọn vai trò
         </p>
@@ -159,7 +159,6 @@ export default function ClientRegister({ onBack }) {
               </div>
             </>
           )}
-
           {/* Nút Submit */}
           <button
             type="submit"

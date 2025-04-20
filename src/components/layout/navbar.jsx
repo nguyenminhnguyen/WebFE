@@ -10,6 +10,7 @@ import {
   FaPlus,
 } from "react-icons/fa";
 
+
 export default function NavBar({
   showLogo = true,
   showSearch = true,
@@ -17,6 +18,7 @@ export default function NavBar({
   showAuthButtons = true,
   authButtons = null,
 }) {
+  const navigate = useNavigate();
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [searchType, setSearchType] = useState("freelancer");
@@ -40,7 +42,19 @@ export default function NavBar({
     const path = searchType === "freelancer" ? "/freelancer" : "/employer";
     window.location.href = `${path}?search=${searchTerm}`;
   };
-
+  const handleLogoClick = () => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    if (!token) {
+      navigate("/"); // Chưa đăng nhập → về trang chủ
+    } else if (role === "freelancer") {
+      navigate("/freelancer/dashboard"); // Freelancer → Điều hướng đến Dashboard
+    } else if (role === "employer") {
+      navigate("/employer/dashboard"); // Employer → Điều hướng đến Dashboard
+    } else {
+      navigate("/"); // Nếu role không hợp lệ → về trang chủ
+    }
+  };
   const freelancerMenuItems = [
     { label: "Tìm việc", path: "/freelancer/dashboard", icon: FaBriefcase },
     { label: "Hồ sơ", path: "/freelancer/profile", icon: FaUserCircle },
@@ -52,6 +66,8 @@ export default function NavBar({
     ? freelancerMenuItems
     : menuItems;
 
+
+
   return (
     <nav className="bg-white px-4 py-3 sticky top-0 z-30 border-b border-gray-200 shadow-sm">
       <div className="max-w-[1400px] mx-auto flex items-center justify-between">
@@ -61,7 +77,7 @@ export default function NavBar({
           {showLogo && (
             <Link to="/" className="flex items-center">
               <img src="/plain.svg" alt="Logo" className="w-8 h-8" />
-              <h1 className="ml-2 text-xl font-bold text-green-600 whitespace-nowrap">
+              <h1 onClick={handleLogoClick} className="ml-2 text-xl font-bold text-green-600 whitespace-nowrap">
                 Freelancer AI
               </h1>
             </Link>

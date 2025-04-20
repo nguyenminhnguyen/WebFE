@@ -1,42 +1,53 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import NavBar from './navbar';
-import Login from '../../components/login/loginButtonMenu';
-import Register from '../../components/register/registerButtonMenu';
-import { FaUserCircle } from 'react-icons/fa';
-
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import NavBar from "./navbar";
+import Login from "../../components/login/loginButtonMenu";
+import Register from "../../components/register/registerButtonMenu";
+import { FaUserCircle } from "react-icons/fa";
 export default function NavBarWrapper() {
   const location = useLocation();
-
+  const navigate = useNavigate();
+  const [role, setRole] = useState(localStorage.getItem("role"));
+  const [token, setToken] = useState(localStorage.getItem("token"));
   const isMinimalNav =
-    location.pathname === '/login' ||
-    location.pathname === '/register' ||
-    location.pathname === '/register/freelancer' ||
-    location.pathname === '/register/employer';
+    location.pathname === "/login" ||
+    location.pathname === "/register" ||
+    location.pathname === "/register/freelancer" ||
+    location.pathname === "/register/employer";
 
-  const isFreelancerPage = location.pathname.startsWith('/freelancer');
-  const isEmployerPage = location.pathname.startsWith('/employer');
+  const isFreelancerPage = location.pathname.startsWith("/freelancer");
+  const isEmployerPage = location.pathname.startsWith("/employer");
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const freelancerMenu = [
-    { label: 'Việc làm của bạn', path: '#' },
-    { label: 'Tài chính', path: '#' },
-    { label: 'Chat', path: '#' },
+    { label: "Việc làm của bạn", path: "#" },
+    { label: "Tài chính", path: "#" },
+    { label: "Chat", path: "#" },
   ];
 
   const employerMenu = [
-    { label: 'Dự án của bạn', path: '#' },
-    { label: 'Báo cáo', path: '#' },
-    { label: 'Chat', path: '#' },
+    { label: "Đăng việc", path: "/employer/jobpost" },
+    { label: "Quản lý công việc", path: "employer/job-manage" },
+    { label: "Tin nhắn", path: "/employer/message" },
   ];
 
   const defaultMenu = [
-    { label: 'Trang chủ', path: '/' },
-    { label: 'Tuyển dụng', path: '/employer' },
-    { label: 'Freelancer', path: '/freelancer' },
+    { label: "Trang chủ", path: "/" },
+    { label: "Tuyển dụng", path: "/employer" },
+    { label: "Freelancer", path: "/freelancer" },
   ];
-
+  const handleLogout = () => {
+    // Xóa dữ liệu khỏi sessionStorage và localStorage
+    sessionStorage.removeItem("role");
+    sessionStorage.removeItem("token");
+    localStorage.removeItem("role"); // Nếu bạn lưu role ở localStorage
+    localStorage.removeItem("token"); // Nếu bạn lưu token ở localStorage
+    // Cập nhật lại state trong React
+    setRole(null);
+    setToken(null);
+    navigate("/login");
+  };
   const profileDropdown = (
     <div className="relative">
       <button
@@ -54,7 +65,10 @@ export default function NavBarWrapper() {
           <button className="w-full px-4 py-2 text-left hover:bg-gray-100">
             Cài đặt
           </button>
-          <button className="w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100">
+          <button
+            onClick={handleLogout}
+            className="w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
+          >
             Đăng xuất
           </button>
         </div>

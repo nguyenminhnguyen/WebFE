@@ -16,6 +16,9 @@ import ClientRegister from "../services/auth/register/EmployerRegister";
 import FreelancerRegister from "../services/auth/register/FreelancerRegister";
 import Freelancer from "../pages/afterLogin_freelancer/freelancer";
 import Profile from "../components/afterLogin_freelancer/Profile";
+import Employer from "../pages/afterLogin_employer/employer";
+import JobPostForm from "../pages/afterLogin_employer/JobPost";
+import PaymentReturn from "../pages/PaymentReturn";
 
 export default function AnimatedRoutes() {
   const location = useLocation();
@@ -128,14 +131,30 @@ export default function AnimatedRoutes() {
         <Route
           path="/employer/dashboard"
           element={
-            <ProtectedRoute>
-              <AnimatedPage>
-                <NavBarWrapper />
-                <div className="mx-[10vw]">
-                  <Freelancer />
-                </div>
-              </AnimatedPage>
-            </ProtectedRoute>
+            <AnimatedPage>
+              <NavBarWrapper />
+              <div className="mx-[10vw]">
+                <Employer />
+              </div>
+            </AnimatedPage>
+          }
+        />
+        <Route
+          path="/employer/jobpost"
+          element={
+            <AnimatedPage>
+              <NavBarWrapper />
+              <JobPostForm />
+            </AnimatedPage>
+          }
+        />
+        <Route
+          path="/payment/return"
+          element={
+            <AnimatedPage>
+              <NavBarWrapper />
+              <PaymentReturn />
+            </AnimatedPage>
           }
         />
 
