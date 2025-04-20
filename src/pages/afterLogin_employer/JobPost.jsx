@@ -84,39 +84,38 @@ function JobPostForm() {
       location: formData.location?.label,
       skills: formData.skills,
       returnUrl: `${window.location.origin}/payment/return`,
-      cancelUrl: `${window.location.origin}/payment/return?cancel=true`
+      cancelUrl: `${window.location.origin}/payment/return?cancel=true`,
     };
-    
+
     const token = localStorage.getItem("token");
-    
+
     try {
       const response = await fetch("http://localhost:3000/api/jobpost", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(dataToSend),
       });
 
       const result = await response.json();
       console.log("Response from server:", result);
-      
-      if (response.ok && result.data?.paymentUrl) {
-        // Lưu jobId vào localStorage
-        if (result.data.job?._id) {
-          localStorage.setItem("pendingJobId", result.data.job._id);
-        }
 
-        // Chuyển hướng trực tiếp đến PayPal
-        const paypalUrl = new URL(result.data.paymentUrl);
-        window.location.replace(paypalUrl.toString());
-      } else {
-        throw new Error(result.message || "Failed to create job post");
-      }
+      // if (response.ok && result.data?.paymentUrl) {
+      //   // Lưu jobId vào localStorage
+      //   if (result.data.job?._id) {
+      //     localStorage.setItem("pendingJobId", result.data.job._id);
+      //   }
+
+      //   // Chuyển hướng trực tiếp đến PayPal
+      //   const paypalUrl = new URL(result.data.paymentUrl);
+      //   window.location.replace(paypalUrl.toString());
+      // } else {
+      //   throw new Error(result.message || "Failed to create job post");
+      // }
     } catch (error) {
-      console.error("Error creating job:", error);
-      alert("Có lỗi xảy ra khi tạo job: " + error.message);
+      console.log("Có lỗi xảy ra khi tạo job: " + error.message);
     } finally {
       setIsSubmitting(false);
     }

@@ -5,7 +5,8 @@ import { AnimatePresence } from "framer-motion";
 import AnimatedPage from "../components/animation/animated_pages"; // dùng bản chuẩn đã style
 import NavBarWrapper from "../components/layout/NavBarWrapper";
 import ProtectedRoute from "../routes/ProtectedRoutes";
-import DashboardNavbar from "../components/afterLogin_freelancer/DashboardNavbar";
+// import DashboardNavbar from "../components/afterLogin_freelancer/DashboardNavbar";
+import NavBar from "../components/layout/navbar";
 // Pages
 import HomePage from "../pages/HomePage/HomePage";
 import RegisterHandle from "../services/auth/register/RegisterHandle";
@@ -19,6 +20,8 @@ import Profile from "../components/afterLogin_freelancer/Profile";
 import Employer from "../pages/afterLogin_employer/employer";
 import JobPostForm from "../pages/afterLogin_employer/JobPost";
 import PaymentReturn from "../pages/PaymentReturn";
+import EmployerInfo from "../pages/info/EmployerInfo";
+import FreelancerInfo from "../pages/info/FreelancerInfo";
 
 export default function AnimatedRoutes() {
   const location = useLocation();
@@ -119,7 +122,7 @@ export default function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <AnimatedPage>
-                <DashboardNavbar />
+                <NavBar />
                 <div className="mx-[10vw]">
                   <Freelancer />
                 </div>
@@ -163,12 +166,32 @@ export default function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <AnimatedPage>
-                <DashboardNavbar />
+                <NavBar />
                 <div className="mx-[10vw]">
                   <Profile />
                 </div>
               </AnimatedPage>
             </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/info/employer"
+          element={
+            <AnimatedPage>
+              <NavBarWrapper />
+              <EmployerInfo />
+            </AnimatedPage>
+          }
+        />
+
+        <Route
+          path="/info/freelancer"
+          element={
+            <AnimatedPage>
+              <NavBarWrapper />
+              <FreelancerInfo />
+            </AnimatedPage>
           }
         />
       </Routes>

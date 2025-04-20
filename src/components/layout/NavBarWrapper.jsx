@@ -34,8 +34,8 @@ export default function NavBarWrapper() {
 
   const defaultMenu = [
     { label: "Trang chủ", path: "/" },
-    { label: "Tuyển dụng", path: "/employer" },
-    { label: "Freelancer", path: "/freelancer" },
+    { label: "Tuyển dụng", path: "/info/employer" },
+    { label: "Freelancer", path: "/info/freelancer" },
   ];
   const handleLogout = () => {
     // Xóa dữ liệu khỏi sessionStorage và localStorage

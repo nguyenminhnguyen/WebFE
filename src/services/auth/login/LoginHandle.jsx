@@ -42,16 +42,17 @@ export default function AuthLogin() {
         throw new Error(data.message || "Đăng nhập thất bại!");
       }
 
-      // 👉 Lưu token và role vào localStorage
+      // 👉 Lưu token, role và user data vào localStorage
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("role", data.user.role);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       // 👉 Chuyển trang tùy theo vai trò hoặc dest
       if (dest) {
         return navigate(dest);
       }
 
-      if (role === "freelancer") {
+      if (data.user.role === "freelancer") {
         return navigate("/freelancer/dashboard");
       } else {
         return navigate("/employer/dashboard");
@@ -71,16 +72,17 @@ export default function AuthLogin() {
   };
   const handleBack = () => {
     navigate("/");
-  }
+  };
   return (
     <AuthLayout>
       <div>
         <h1 className="text-2xl font-bold text-center text-gray-800">
           Đăng nhập vào <span className="text-green-600">Freelancer AI</span>
         </h1>
-        <p 
-        onClick={handleBack}
-        className="text-gray-500 cursor-pointer hover:underline mt-4 mb-2">
+        <p
+          onClick={handleBack}
+          className="text-gray-500 cursor-pointer hover:underline mt-4 mb-2"
+        >
           ← Trở về trang chủ
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">

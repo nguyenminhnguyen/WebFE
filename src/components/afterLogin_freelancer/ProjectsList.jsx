@@ -11,10 +11,9 @@ import JobCard from "./JobCard";
 import ApplyModal from "./ApplyModal";
 import FilterSidebar from "./FilterSidebar";
 import { getFreelancerJobs, postApplyJob } from "../../api/freelancer";
-import { useAuth } from "../../context/AuthContext";
+
 
 const ProjectsList = () => {
-  const { freelancerId } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -209,9 +208,6 @@ const ProjectsList = () => {
   };
 
   const handleApplyJob = async (jobId, proposalText, bidAmount) => {
-    console.log("Freelancer ID:", freelancerId);
-    console.log("Job ID:", jobId);
-
     if (!jobId) {
       setConfirmationModal({
         isOpen: true,
@@ -248,7 +244,7 @@ const ProjectsList = () => {
       if (
         response.status === 201 &&
         response.statusText === "Created" &&
-        response.data.message === "Application submitted successfully!"
+        response.data.message === "Application submitted successfully"
       ) {
         setConfirmationModal({
           isOpen: true,

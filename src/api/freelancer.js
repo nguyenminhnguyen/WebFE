@@ -61,7 +61,7 @@ const postApplyJob = async ({ jobId, proposalText, bidAmount }) => {
       throw new Error(response.data.message || "Failed to apply for job");
     }
   } catch (error) {
-    console.error("Error applying for job:", error);
+    console.error(error);
     if (error.response) {
       // Nếu có response từ server
       throw new Error(error.response.data.message || "Failed to apply for job");

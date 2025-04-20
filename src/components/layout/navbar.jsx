@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaSearch,
   FaUserTie,
@@ -8,8 +8,9 @@ import {
   FaEnvelope,
   FaUserCircle,
   FaPlus,
+  FaSignOutAlt,
+  FaUser,
 } from "react-icons/fa";
-
 
 export default function NavBar({
   showLogo = true,
@@ -18,58 +19,85 @@ export default function NavBar({
   showAuthButtons = true,
   authButtons = null,
 }) {
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [searchType, setSearchType] = useState("freelancer");
   const [showDropdown, setShowDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
-  // Check if we're on the freelancer dashboard
-  const isFreelancerDashboard = location.pathname.startsWith(
-    "/freelancer/dashboard"
-  );
+  // Check if we're on pages that should hide the navbar
+  const isAuthPage =
+    location.pathname === "/login" ||
+    location.pathname === "/register" ||
+    location.pathname === "/register/freelancer" ||
+    location.pathname === "/register/employer";
 
-  // If we're on the dashboard, don't render the main navbar
-  if (isFreelancerDashboard) {
+  // Hide navbar on auth pages and dashboards
+  if (isAuthPage) {
     return null;
   }
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    setIsLoggedIn(!!token);
+    setUserRole(role);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setUserRole(null);
+    navigate("/");
+  };
   const handleSearch = (e) => {
     e.preventDefault();
     const path = searchType === "freelancer" ? "/freelancer" : "/employer";
     window.location.href = `${path}?search=${searchTerm}`;
   };
+
   const handleLogoClick = () => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-    if (!token) {
-      navigate("/"); // Chưa đăng nhập → về trang chủ
-    } else if (role === "freelancer") {
-      navigate("/freelancer/dashboard"); // Freelancer → Điều hướng đến Dashboard
-    } else if (role === "employer") {
-      navigate("/employer/dashboard"); // Employer → Điều hướng đến Dashboard
+    if (!isLoggedIn) {
+      navigate("/");
+    } else if (userRole === "freelancer") {
+      navigate("/freelancer/dashboard");
+    } else if (userRole === "employer") {
+      navigate("/employer/dashboard");
     } else {
-      navigate("/"); // Nếu role không hợp lệ → về trang chủ
+      navigate("/");
     }
   };
+
   const freelancerMenuItems = [
     { label: "Tìm việc", path: "/freelancer/dashboard", icon: FaBriefcase },
     { label: "Hồ sơ", path: "/freelancer/profile", icon: FaUserCircle },
-    { label: "Đề xuất", path: "/freelancer/proposals", icon: FaEnvelope },
+    { label: "Tin nhắn", path: "/freelancer/messages", icon: FaEnvelope },
     { label: "Thông báo", path: "/freelancer/notifications", icon: FaBell },
   ];
 
-  const activeMenuItems = isFreelancerDashboard
-    ? freelancerMenuItems
+  const employerMenuItems = [
+    { label: "Quản lý dự án", path: "/employer/dashboard", icon: FaBriefcase },
+    { label: "Hồ sơ", path: "/employer/profile", icon: FaUserCircle },
+    { label: "Tin nhắn", path: "/employer/messages", icon: FaEnvelope },
+    { label: "Thông báo", path: "/employer/notifications", icon: FaBell },
+  ];
+
+  const activeMenuItems = isLoggedIn
+    ? userRole === "freelancer"
+      ? freelancerMenuItems
+      : employerMenuItems
     : menuItems;
 
-
-
   return (
-    <nav className="bg-white px-4 py-3 sticky top-0 z-30 border-b border-gray-200 shadow-sm">
+    <nav className="bg-white px-4 py-3 border-b border-gray-200 shadow-sm">
       <div className="max-w-[1400px] mx-auto flex items-center justify-between">
         {/* Left section: Logo and Menu Items */}
         <div className="flex items-center space-x-8">
@@ -77,7 +105,10 @@ export default function NavBar({
           {showLogo && (
             <Link to="/" className="flex items-center">
               <img src="/plain.svg" alt="Logo" className="w-8 h-8" />
-              <h1 onClick={handleLogoClick} className="ml-2 text-xl font-bold text-green-600 whitespace-nowrap">
+              <h1
+                onClick={handleLogoClick}
+                className="ml-2 text-xl font-bold text-green-600 whitespace-nowrap"
+              >
                 Freelancer AI
               </h1>
             </Link>
@@ -122,8 +153,8 @@ export default function NavBar({
             </form>
           )}
 
-          {/* Quick Actions - Only show on dashboard */}
-          {isFreelancerDashboard && (
+          {/* Quick Actions - Only show when logged in */}
+          {isLoggedIn && (
             <div className="hidden md:flex items-center space-x-2">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
@@ -139,17 +170,50 @@ export default function NavBar({
                 <FaEnvelope className="w-5 h-5" />
                 <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-              <Link
-                to="/freelancer/profile"
-                className="p-2 text-gray-600 hover:text-green-600"
-              >
-                <FaUserCircle className="w-5 h-5" />
-              </Link>
+
+              {/* Profile Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                  className="p-2 text-gray-600 hover:text-green-600"
+                >
+                  <FaUserCircle className="w-5 h-5" />
+                </button>
+
+                {showProfileDropdown && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                    <div className="py-1">
+                      <Link
+                        to={
+                          userRole === "freelancer"
+                            ? "/freelancer/profile"
+                            : "/employer/profile"
+                        }
+                        onClick={() => setShowProfileDropdown(false)}
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <FaUser className="w-4 h-4 mr-2" />
+                        Hồ sơ
+                      </Link>
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setShowProfileDropdown(false);
+                        }}
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <FaSignOutAlt className="w-4 h-4 mr-2" />
+                        Đăng xuất
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
-          {/* Auth buttons */}
-          {showAuthButtons && authButtons}
+          {/* Auth buttons - Only show when not logged in */}
+          {!isLoggedIn && showAuthButtons && authButtons}
 
           {/* Mobile Menu Button */}
           <button
@@ -191,7 +255,37 @@ export default function NavBar({
               {label}
             </Link>
           ))}
-          {showAuthButtons && authButtons && (
+
+          {/* Mobile Profile and Logout - Only show when logged in */}
+          {isLoggedIn && (
+            <>
+              <Link
+                to={
+                  userRole === "freelancer"
+                    ? "/freelancer/profile"
+                    : "/employer/profile"
+                }
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center py-2 px-3 rounded-lg text-sm font-medium text-gray-600 hover:text-green-600 hover:bg-green-50"
+              >
+                <FaUser className="w-4 h-4 mr-2" />
+                Hồ sơ
+              </Link>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center w-full py-2 px-3 rounded-lg text-sm font-medium text-gray-600 hover:text-green-600 hover:bg-green-50"
+              >
+                <FaSignOutAlt className="w-4 h-4 mr-2" />
+                Đăng xuất
+              </button>
+            </>
+          )}
+
+          {/* Auth buttons - Only show when not logged in */}
+          {!isLoggedIn && showAuthButtons && authButtons && (
             <div className="flex flex-col space-y-2 pt-2">{authButtons}</div>
           )}
         </div>

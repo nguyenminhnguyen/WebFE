@@ -9,7 +9,6 @@ import {
   FaStar,
   FaEdit,
 } from "react-icons/fa";
-import { getFreelancerProfile } from "../../api/freelancer";
 
 const Profile = () => {
   const [profile, setProfile] = useState({
@@ -18,55 +17,41 @@ const Profile = () => {
     phone: "",
     location: "",
     skills: [],
-    experience: [],
+    experience: "",
     education: [],
     rating: 0,
     completedProjects: 0,
     bio: "",
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const loadProfile = () => {
       try {
-        setLoading(true);
-        const freelancerId = "67f2baeaf02bec90fc68a766"; // ID của freelancer cần lấy hồ sơ
-        console.log("Fetching profile for freelancerId:", freelancerId);
-        const response = await getFreelancerProfile(freelancerId);
-
-        if (response.data) {
-          // Kiểm tra cấu trúc dữ liệu
-          const profileData = {
-            name: response.data.fullName || "",
-            email: response.data.email || "",
-            phone: response.data.phone || "",
-            location: response.data.address || "",
-            skills: response.data.skills || [],
-            experience: response.data.experience || [],
-            education: response.data.education || [],
-            rating: response.data.rating || 0,
-            completedProjects: response.data.completedProjects || 0,
-            bio: response.data.bio || "",
-          };
-          console.log("Processed profile data:", profileData);
-          console.log("email:", response.data.email);
-          console.log("email:", response);
-          setProfile(profileData);
-          setError(null);
-        } else {
-          throw new Error("Không có dữ liệu profile");
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if (userData) {
+          setProfile({
+            name: userData.fname || "",
+            email: userData.email || "",
+            phone: userData.phone || "",
+            location: userData.address || "",
+            skills: userData.skills || [],
+            experience: userData.experience || "",
+            education: userData.education || [],
+            rating: userData.rating || 0,
+            completedProjects: userData.completedProjects || 0,
+            bio: userData.bio || "",
+          });
         }
       } catch (err) {
-        console.error("Error fetching profile:", err);
+        console.error("Error loading profile:", err);
         setError("Không thể tải thông tin hồ sơ");
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchProfile();
+    loadProfile();
   }, []);
 
   const handleInputChange = (e) => {
@@ -225,23 +210,11 @@ const Profile = () => {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Kinh nghiệm
               </h2>
-              {profile.experience && profile.experience.length > 0 ? (
-                <div className="space-y-6">
-                  {profile.experience.map((exp, index) => (
-                    <div
-                      key={index}
-                      className="border-l-4 border-[#14a800] pl-4"
-                    >
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {exp.title}
-                      </h3>
-                      <p className="text-[#14a800]">{exp.company}</p>
-                      <p className="text-sm text-gray-500">
-                        {exp.startDate} - {exp.endDate || "Hiện tại"}
-                      </p>
-                      <p className="mt-2 text-gray-600">{exp.description}</p>
-                    </div>
-                  ))}
+              {profile.experience ? (
+                <div className="prose max-w-none">
+                  <p className="text-gray-600 whitespace-pre-line">
+                    {profile.experience}
+                  </p>
                 </div>
               ) : (
                 <p className="text-gray-500 text-center">Chưa có kinh nghiệm</p>
@@ -292,22 +265,6 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Languages */}
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Ngôn ngữ
-              </h2>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Tiếng Việt</span>
-                  <span className="text-gray-500">Bản ngữ</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Tiếng Anh</span>
-                  <span className="text-gray-500">Thành thạo</span>
-                </div>
-              </div>
-            </div>
 
             {/* Hourly Rate */}
             <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
