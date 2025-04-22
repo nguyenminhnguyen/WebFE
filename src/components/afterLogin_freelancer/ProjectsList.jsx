@@ -12,7 +12,6 @@ import ApplyModal from "./ApplyModal";
 import FilterSidebar from "./FilterSidebar";
 import { getFreelancerJobs, postApplyJob } from "../../api/freelancer";
 
-
 const ProjectsList = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,6 +24,7 @@ const ProjectsList = () => {
   const [totalJobs, setTotalJobs] = useState(0);
   const [jobsPerPage] = useState(10); // Số công việc hiển thị trên mỗi trang, phù hợp với backend
   const [applyingJob, setApplyingJob] = useState(null);
+  const [freelancerId, setFreelancerId] = useState(null); // Thêm state cho freelancerId
   const [confirmationModal, setConfirmationModal] = useState({
     isOpen: false,
     type: "",
@@ -57,6 +57,14 @@ const ProjectsList = () => {
     proposalText: "",
     bidAmount: "",
   });
+
+  // Thêm useEffect để lấy freelancerId từ localStorage khi component mount
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user._id) {
+      setFreelancerId(user._id);
+    }
+  }, []);
 
   // Fetch jobs from API
   useEffect(() => {
@@ -220,13 +228,15 @@ const ProjectsList = () => {
     }
 
     if (!freelancerId) {
-      console.log("No freelancerId found");
       setConfirmationModal({
         isOpen: true,
         type: "error",
         title: "Lỗi ứng tuyển",
         message: "Vui lòng đăng nhập để ứng tuyển",
-        onConfirm: null,
+        onConfirm: () => {
+          // Có thể thêm logic chuyển hướng đến trang đăng nhập ở đây
+          window.location.href = "/login";
+        },
       });
       return;
     }
@@ -420,24 +430,24 @@ const ProjectsList = () => {
                 </div>
               ) : (
                 <>
-                <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     {jobs.map((job, index) => (
                       <JobCard
-                      key={job._id}
+                        key={job._id}
                         job={job}
                         index={index}
                         currentPage={currentPage}
                         jobsPerPage={jobsPerPage}
                         onViewDetails={handleJobClick}
                       />
-                          ))}
-                        </div>
+                    ))}
+                  </div>
                   {!loading && jobs.length > 0 && totalPages > 1 && (
                     <div className="mt-8 flex items-center justify-between">
                       <div className="text-sm text-gray-500">
                         Hiển thị {jobs.length} công việc trên trang{" "}
                         {currentPage} / {totalPages}
-                            </div>
+                      </div>
                       <div className="flex items-center space-x-2">
                         {currentPage > 1 && (
                           <button
@@ -451,8 +461,8 @@ const ProjectsList = () => {
                         {Array.from({ length: totalPages }, (_, i) => i + 1)
                           .filter(
                             (page) =>
-                      page === 1 ||
-                      page === totalPages ||
+                              page === 1 ||
+                              page === totalPages ||
                               (page >= currentPage - 1 &&
                                 page <= currentPage + 1)
                           )
@@ -478,32 +488,32 @@ const ProjectsList = () => {
                                 </button>,
                               ];
                             }
-                      return (
-                        <button
-                          key={page}
-                          onClick={() => setCurrentPage(page)}
+                            return (
+                              <button
+                                key={page}
+                                onClick={() => setCurrentPage(page)}
                                 className={`px-3 py-1.5 rounded border ${
-                            currentPage === page
+                                  currentPage === page
                                     ? "border-[#14a800] bg-[#14a800] text-white"
                                     : "border-gray-300 text-gray-600 hover:bg-gray-50"
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      );
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            );
                           })}
 
                         {currentPage < totalPages && (
-                <button
+                          <button
                             onClick={() => setCurrentPage((prev) => prev + 1)}
                             className="px-3 py-1.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-50"
-                >
-                  <FaChevronRight className="h-4 w-4" />
-                </button>
+                          >
+                            <FaChevronRight className="h-4 w-4" />
+                          </button>
                         )}
                       </div>
-              </div>
-            )}
+                    </div>
+                  )}
                 </>
               )}
             </div>

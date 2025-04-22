@@ -22,6 +22,7 @@ import JobPostForm from "../pages/afterLogin_employer/JobPost";
 import PaymentReturn from "../pages/PaymentReturn";
 import EmployerInfo from "../pages/info/EmployerInfo";
 import FreelancerInfo from "../pages/info/FreelancerInfo";
+import JobDetail from "../pages/afterLogin_employer/JobDetail";
 
 export default function AnimatedRoutes() {
   const location = useLocation();
@@ -148,6 +149,15 @@ export default function AnimatedRoutes() {
             <AnimatedPage>
               <NavBarWrapper />
               <JobPostForm />
+            </AnimatedPage>
+          }
+        />
+        <Route
+          path="/employer/job/:id"
+          element={
+            <AnimatedPage>
+              <NavBarWrapper />
+              <JobDetail />
             </AnimatedPage>
           }
         />

@@ -6,10 +6,15 @@ import {
   FaBriefcase,
   FaCamera,
   FaIdCard,
+  FaTimes,
+  FaMapMarkerAlt,
 } from 'react-icons/fa';
 import BirthAndPhoneSelect from '../../../components/register/BirthdayAndPhoneNumberSelect';
 import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../../components/layout/AuthLayout';
+import Select from 'react-select';
+import { countryOptions } from '../../../data/CountryOption';
+
 export default function FreelancerRegister({ onBack }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -21,7 +26,10 @@ export default function FreelancerRegister({ onBack }) {
     experience: '',
     email: '',
     avatar: null,
+    location: null,
   });
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarError, setAvatarError] = useState('');
 
   const navigate = useNavigate();
   const handleBack = () => {
@@ -30,17 +38,63 @@ export default function FreelancerRegister({ onBack }) {
       return;
     }
     if (onBack) {
-      onBack(); // Nếu có onBack từ props, gọi nó
+      onBack();
     } else {
-      navigate('/register'); // Nếu không, điều hướng về trang chọn vai trò
+      navigate('/register');
     }
   };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleLocationChange = (selectedOption) => {
+    setFormData({ ...formData, location: selectedOption });
+  };
+
   const handleFileChange = (e) => {
-    setFormData({ ...formData, avatar: e.target.files[0] });
+    const file = e.target.files[0];
+    setAvatarError('');
+
+    if (file) {
+      console.log('File information:', {
+        name: file.name,
+        type: file.type,
+        size: file.size
+      });
+
+      // Kiểm tra kích thước file (giới hạn 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setAvatarError('Kích thước ảnh không được vượt quá 5MB');
+        return;
+      }
+
+      // Kiểm tra định dạng file
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      if (!validTypes.includes(file.type.toLowerCase())) {
+        console.log('Invalid file type:', file.type);
+        setAvatarError('Chỉ chấp nhận file ảnh định dạng JPG, JPEG hoặc PNG');
+        return;
+      }
+
+      // Tạo URL preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+
+      setFormData({ ...formData, avatar: file });
+    } else {
+      setAvatarPreview(null);
+      setFormData({ ...formData, avatar: null });
+    }
+  };
+
+  const removeAvatar = () => {
+    setAvatarPreview(null);
+    setFormData({ ...formData, avatar: null });
+    setAvatarError('');
   };
 
   const handleSubmit = async (e) => {
@@ -49,23 +103,68 @@ export default function FreelancerRegister({ onBack }) {
       setStep(2);
       return;
     }
+
+    // Log toàn bộ formData để kiểm tra
+    console.log('Current formData:', formData);
+
+    // Kiểm tra các trường bắt buộc
+    if (!formData.username || !formData.password || !formData.email) {
+      console.log('Missing required fields:', {
+        username: formData.username,
+        password: formData.password,
+        email: formData.email
+      });
+      alert('Vui lòng điền đầy đủ thông tin Username, Password và Email');
+      setStep(1);
+      return;
+    }
+
     try {
+      // Tạo FormData object để gửi file
+      const formDataToSend = new FormData();
+      
+      // Thêm các trường thông tin vào FormData
+      Object.keys(formData).forEach(key => {
+        if (key === 'avatar' && formData[key]) {
+          formDataToSend.append('avatar', formData[key]);
+        } else if (key === 'location' && formData[key]) {
+          formDataToSend.append('location', formData[key].label);
+        } else if (formData[key]) {
+          formDataToSend.append(key, formData[key].toString());
+        }
+      });
+
+      // Log ra để kiểm tra dữ liệu trước khi gửi
+      console.log('FormData contents:');
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
+
       const response = await fetch(
         'http://localhost:3000/api/freelancer/register',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: formDataToSend,
         }
       );
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Đăng ký thất bại!');
+      console.log('Server response:', data);
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Đăng ký thất bại!');
+      }
 
       alert('Đăng ký thành công!');
       navigate('/login');
     } catch (error) {
-      alert(error.message);
+      console.error('Registration error:', error);
+      if (error.message.includes('Username, password and email are required')) {
+        setStep(1);
+        alert('Vui lòng điền đầy đủ thông tin Username, Password và Email');
+      } else {
+        alert(error.message);
+      }
     }
   };
 
@@ -166,14 +265,69 @@ export default function FreelancerRegister({ onBack }) {
                 />
               </div>
 
+              {/* Chọn địa điểm */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Địa điểm làm việc
+                </label>
+                <div className="relative">
+                  <FaMapMarkerAlt className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 z-10" />
+                  <Select
+                    options={countryOptions}
+                    value={formData.location}
+                    onChange={handleLocationChange}
+                    getOptionLabel={(e) => <div>{e.label}</div>}
+                    placeholder="Chọn quốc gia làm việc"
+                    isSearchable={false}
+                    styles={{
+                      control: (base, state) => ({
+                        ...base,
+                        borderRadius: "20px",
+                        borderColor: state.isFocused ? "#000000" : "#000000",
+                        padding: "0.5rem",
+                        paddingLeft: "2.5rem",
+                      }),
+                    }}
+                  />
+                </div>
+              </div>
+
               {/* Ảnh đại diện */}
-              <div className="relative">
-                <FaCamera className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="file"
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 transition text-sm"
-                  accept="image/*"
-                />
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Ảnh đại diện
+                </label>
+                <div className="relative">
+                  <FaCamera className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="file"
+                    name="avatar"
+                    onChange={handleFileChange}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 transition text-sm"
+                    accept="image/png, image/jpeg, image/jpg"
+                  />
+                </div>
+                
+                {avatarError && (
+                  <p className="text-red-500 text-sm mt-1">{avatarError}</p>
+                )}
+
+                {avatarPreview && (
+                  <div className="relative inline-block mt-2">
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar preview"
+                      className="w-24 h-24 rounded-full object-cover border-2 border-green-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeAvatar}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition"
+                    >
+                      <FaTimes className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             </>
           )}

@@ -4,9 +4,8 @@ import {
   FaMapMarkerAlt,
   FaClock,
   FaUserFriends,
-  FaStar,
+  FaBriefcase,
   FaDollarSign,
-  FaCheck,
 } from "react-icons/fa";
 
 const ProjectDetailModal = ({ job, onClose, onApply, isApplying }) => {
@@ -27,7 +26,7 @@ const ProjectDetailModal = ({ job, onClose, onApply, isApplying }) => {
                 </span>
                 <span className="flex items-center">
                   <FaClock className="w-4 h-4 mr-1" />
-                  {new Date(job.createdAt).toLocaleDateString()}
+                  {new Date(job.createdAt).toLocaleDateString('vi-VN')}
                 </span>
               </div>
             </div>
@@ -50,16 +49,16 @@ const ProjectDetailModal = ({ job, onClose, onApply, isApplying }) => {
                 <span className="text-sm font-medium">Ngân sách</span>
               </div>
               <p className="text-2xl font-bold text-[#14a800]">
-                ${job.salary ? job.salary.toLocaleString() : "N/A"}
+                {job.minSalary?.toLocaleString()} - {job.maxSalary?.toLocaleString()} USD
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
               <div className="flex items-center text-gray-500 mb-2">
                 <FaClock className="w-4 h-4 mr-2" />
-                <span className="text-sm font-medium">Thời gian</span>
+                <span className="text-sm font-medium">Thời gian dự kiến</span>
               </div>
               <p className="text-2xl font-bold text-gray-900">
-                {job.duration || "Không xác định"}
+                {job.timeEstimation}
               </p>
             </div>
           </div>
@@ -80,10 +79,7 @@ const ProjectDetailModal = ({ job, onClose, onApply, isApplying }) => {
               Kỹ năng yêu cầu
             </h3>
             <div className="flex flex-wrap gap-2">
-              {(Array.isArray(job.skills)
-                ? job.skills
-                : [job.skills].filter(Boolean)
-              ).map((skill, index) => (
+              {job.skills?.map((skill, index) => (
                 <span
                   key={index}
                   className="px-3 py-1 text-sm text-[#14a800] bg-[#14a800]/10 rounded-full"
@@ -113,13 +109,22 @@ const ProjectDetailModal = ({ job, onClose, onApply, isApplying }) => {
               <span>{job.appliedCount || 0} ứng viên</span>
             </div>
             <div className="flex items-center text-gray-600">
-              <FaStar className="w-5 h-5 mr-2" />
-              <span>{job.experienceLevel}</span>
+              <FaBriefcase className="w-5 h-5 mr-2" />
+              <span>Kinh nghiệm: {job.experienceLevel}</span>
             </div>
             <div className="flex items-center text-gray-600">
               <FaClock className="w-5 h-5 mr-2" />
               <span>{job.estimatedHours || "Không xác định"} giờ</span>
             </div>
+          </div>
+
+          {/* Status and Dates */}
+          <div className="text-sm text-gray-500 mb-6">
+            <p>Trạng thái: <span className={`font-medium ${job.status === 'Open' ? 'text-green-600' : 'text-red-600'}`}>
+              {job.status === 'Open' ? 'Đang mở' : 'Đã đóng'}
+            </span></p>
+            <p>Ngày đăng: {new Date(job.createdAt).toLocaleDateString('vi-VN')}</p>
+            <p>Cập nhật lần cuối: {new Date(job.updatedAt).toLocaleDateString('vi-VN')}</p>
           </div>
         </div>
 
@@ -132,29 +137,22 @@ const ProjectDetailModal = ({ job, onClose, onApply, isApplying }) => {
             >
               Đóng
             </button>
-            <button
-              onClick={onApply}
-              disabled={job.hasApplied || isApplying}
-              className={`px-6 py-2 rounded-lg transition-colors ${
-                job.hasApplied
-                  ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-                  : "bg-[#14a800] text-white hover:bg-[#108a00]"
-              }`}
-            >
-              {isApplying ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Đang ứng tuyển...
-                </div>
-              ) : job.hasApplied ? (
-                <div className="flex items-center">
-                  <FaCheck className="mr-2" />
-                  Đã ứng tuyển
-                </div>
-              ) : (
-                "Ứng tuyển ngay"
-              )}
-            </button>
+            {job.status === 'Open' && (
+              <button
+                onClick={onApply}
+                disabled={isApplying}
+                className="px-6 py-2 bg-[#14a800] text-white rounded-lg hover:bg-[#108a00] transition-colors disabled:bg-gray-400"
+              >
+                {isApplying ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Đang ứng tuyển...
+                  </div>
+                ) : (
+                  "Ứng tuyển ngay"
+                )}
+              </button>
+            )}
           </div>
         </div>
       </div>
