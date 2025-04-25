@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../../components/layout/AuthLayout';
 import Select from 'react-select';
 import { countryOptions } from '../../../data/CountryOption';
+import { connectSocket } from "../../../services/socket";
 
 export default function FreelancerRegister({ onBack }) {
   const [step, setStep] = useState(1);
@@ -156,6 +157,7 @@ export default function FreelancerRegister({ onBack }) {
       }
 
       alert('Đăng ký thành công!');
+      connectSocket();
       navigate('/login');
     } catch (error) {
       console.error('Registration error:', error);

@@ -3,6 +3,7 @@ import AuthLayout from "../../../components/layout/AuthLayout";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import SocialButtons from "../../../components/login/social-button";
+import { connectSocket } from "../../../services/socket";
 
 export default function AuthLogin() {
   const navigate = useNavigate();
@@ -46,6 +47,9 @@ export default function AuthLogin() {
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("role", data.user.role);
       localStorage.setItem("user", JSON.stringify(data.user));
+
+      // 👉 Kết nối socket sau khi đăng nhập thành công
+      connectSocket();
 
       // 👉 Chuyển trang tùy theo vai trò hoặc dest
       if (dest) {
