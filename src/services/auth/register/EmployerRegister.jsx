@@ -8,6 +8,8 @@ import {
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../../components/layout/AuthLayout';
+import { connectSocket } from "../../../services/socket";
+
 export default function ClientRegister({ onBack }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -51,6 +53,7 @@ export default function ClientRegister({ onBack }) {
       if (!response.ok) throw new Error(data.message || 'Đăng ký thất bại!');
 
       alert('Đăng ký thành công!');
+      connectSocket();
       navigate('/login');
     } catch (error) {
       alert(error.message);
