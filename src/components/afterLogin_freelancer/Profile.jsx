@@ -97,31 +97,34 @@ const Profile = () => {
     const newEducation = [...profile.education];
     newEducation[index] = {
       ...newEducation[index],
-      [field]: value
+      [field]: value,
     };
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      education: newEducation
+      education: newEducation,
     }));
   };
 
   const addEducation = () => {
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      education: [...prev.education, {
-        school: '',
-        degree: '',
-        startDate: '',
-        endDate: '',
-        description: ''
-      }]
+      education: [
+        ...prev.education,
+        {
+          school: "",
+          degree: "",
+          startDate: "",
+          endDate: "",
+          description: "",
+        },
+      ],
     }));
   };
 
   const removeEducation = (index) => {
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      education: prev.education.filter((_, i) => i !== index)
+      education: prev.education.filter((_, i) => i !== index),
     }));
   };
 
@@ -129,46 +132,52 @@ const Profile = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/freelancer/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(profile)
-      });
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        "http://localhost:3000/api/freelancer/profile",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(profile),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Cập nhật thất bại');
+        throw new Error("Cập nhật thất bại");
       }
 
       const data = await response.json();
-      console.log('Server response data:', data);
-      
+      console.log("Server response data:", data);
+
       // Cập nhật localStorage với dữ liệu mới
-      const userData = JSON.parse(localStorage.getItem('user'));
+      const userData = JSON.parse(localStorage.getItem("user"));
       const updatedUserData = {
         ...userData,
         bio: data.data.bio,
         skills: data.data.skills,
         experience: data.data.experience,
-        education: data.data.education
+        education: data.data.education,
       };
-      localStorage.setItem('user', JSON.stringify(updatedUserData));
-      console.log('Updated localStorage:', JSON.parse(localStorage.getItem('user')));
-      
+      localStorage.setItem("user", JSON.stringify(updatedUserData));
+      console.log(
+        "Updated localStorage:",
+        JSON.parse(localStorage.getItem("user"))
+      );
+
       // Cập nhật state profile với dữ liệu mới
-      setProfile(prev => ({
+      setProfile((prev) => ({
         ...prev,
         bio: data.data.bio,
         skills: data.data.skills,
         experience: data.data.experience,
-        education: data.data.education
+        education: data.data.education,
       }));
-      
+
       setIsEditing(false);
-      alert('Cập nhật thành công!');
+      alert("Cập nhật thành công!");
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -336,11 +345,16 @@ const Profile = () => {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {profile.skills.map((skill, index) => (
-                      <div key={index} className="flex items-center gap-2 bg-[#14a800]/10 text-[#14a800] px-3 py-1 rounded-full">
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 bg-[#14a800]/10 text-[#14a800] px-3 py-1 rounded-full"
+                      >
                         <input
                           type="text"
                           value={skill}
-                          onChange={(e) => handleSkillChange(index, e.target.value)}
+                          onChange={(e) =>
+                            handleSkillChange(index, e.target.value)
+                          }
                           className="bg-transparent border-none focus:outline-none"
                         />
                         <button
@@ -402,7 +416,9 @@ const Profile = () => {
                         type="text"
                         name={`school-${index}`}
                         value={edu.school}
-                        onChange={(e) => handleEducationChange(index, 'school', e.target.value)}
+                        onChange={(e) =>
+                          handleEducationChange(index, "school", e.target.value)
+                        }
                         className="w-full p-2 border border-gray-300 rounded-lg focus:border-[#14a800] focus:outline-none"
                         placeholder="Tên trường"
                       />
@@ -410,28 +426,46 @@ const Profile = () => {
                         type="text"
                         name={`degree-${index}`}
                         value={edu.degree}
-                        onChange={(e) => handleEducationChange(index, 'degree', e.target.value)}
+                        onChange={(e) =>
+                          handleEducationChange(index, "degree", e.target.value)
+                        }
                         className="w-full p-2 border border-gray-300 rounded-lg focus:border-[#14a800] focus:outline-none"
                         placeholder="Bằng cấp"
                       />
                       <div className="flex gap-2">
                         <div className="flex-1">
-                          <label className="block text-sm text-gray-600 mb-1">Ngày bắt đầu</label>
+                          <label className="block text-sm text-gray-600 mb-1">
+                            Ngày bắt đầu
+                          </label>
                           <input
                             type="date"
                             name={`startDate-${index}`}
                             value={edu.startDate}
-                            onChange={(e) => handleEducationChange(index, 'startDate', e.target.value)}
+                            onChange={(e) =>
+                              handleEducationChange(
+                                index,
+                                "startDate",
+                                e.target.value
+                              )
+                            }
                             className="w-full p-2 border border-gray-300 rounded-lg focus:border-[#14a800] focus:outline-none"
                           />
                         </div>
                         <div className="flex-1">
-                          <label className="block text-sm text-gray-600 mb-1">Ngày kết thúc</label>
+                          <label className="block text-sm text-gray-600 mb-1">
+                            Ngày kết thúc
+                          </label>
                           <input
                             type="date"
                             name={`endDate-${index}`}
                             value={edu.endDate}
-                            onChange={(e) => handleEducationChange(index, 'endDate', e.target.value)}
+                            onChange={(e) =>
+                              handleEducationChange(
+                                index,
+                                "endDate",
+                                e.target.value
+                              )
+                            }
                             className="w-full p-2 border border-gray-300 rounded-lg focus:border-[#14a800] focus:outline-none"
                           />
                         </div>
@@ -439,7 +473,13 @@ const Profile = () => {
                       <textarea
                         name={`description-${index}`}
                         value={edu.description}
-                        onChange={(e) => handleEducationChange(index, 'description', e.target.value)}
+                        onChange={(e) =>
+                          handleEducationChange(
+                            index,
+                            "description",
+                            e.target.value
+                          )
+                        }
                         className="w-full p-2 border border-gray-300 rounded-lg focus:border-[#14a800] focus:outline-none"
                         placeholder="Mô tả"
                       />

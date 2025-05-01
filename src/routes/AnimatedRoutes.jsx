@@ -23,6 +23,7 @@ import PaymentReturn from "../pages/PaymentReturn";
 import EmployerInfo from "../pages/info/EmployerInfo";
 import FreelancerInfo from "../pages/info/FreelancerInfo";
 import JobDetail from "../pages/afterLogin_employer/JobDetail";
+import GoogleCallback from "../services/auth/login/GoogleCallback";
 
 export default function AnimatedRoutes() {
   const location = useLocation();
@@ -204,6 +205,8 @@ export default function AnimatedRoutes() {
             </AnimatedPage>
           }
         />
+         <Route path="/freelancer/callback" element={<GoogleCallback />} />
+        <Route path="/employer/callback" element={<GoogleCallback />} />
       </Routes>
     </AnimatePresence>
   );

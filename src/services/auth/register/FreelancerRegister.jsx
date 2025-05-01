@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   FaUser,
   FaLock,
@@ -8,40 +8,40 @@ import {
   FaIdCard,
   FaTimes,
   FaMapMarkerAlt,
-} from 'react-icons/fa';
-import BirthAndPhoneSelect from '../../../components/register/BirthdayAndPhoneNumberSelect';
-import { useNavigate } from 'react-router-dom';
-import AuthLayout from '../../../components/layout/AuthLayout';
-import Select from 'react-select';
-import { countryOptions } from '../../../data/CountryOption';
+} from "react-icons/fa";
+import BirthAndPhoneSelect from "../../../components/register/BirthdayAndPhoneNumberSelect";
+import { useNavigate } from "react-router-dom";
+import AuthLayout from "../../../components/layout/AuthLayout";
+import Select from "react-select";
+import { countryOptions } from "../../../data/CountryOption";
 import { connectSocket } from "../../../services/socket";
 
 export default function FreelancerRegister({ onBack }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    fname: '',
-    birthday: '',
-    phone: '',
-    experience: '',
-    email: '',
+    username: "",
+    password: "",
+    fname: "",
+    birthday: "",
+    phone: "",
+    experience: "",
+    email: "",
     avatar: null,
     location: null,
   });
   const [avatarPreview, setAvatarPreview] = useState(null);
-  const [avatarError, setAvatarError] = useState('');
+  const [avatarError, setAvatarError] = useState("");
 
   const navigate = useNavigate();
   const handleBack = () => {
-    if(step===2){
+    if (step === 2) {
       setStep(1);
       return;
     }
     if (onBack) {
       onBack();
     } else {
-      navigate('/register');
+      navigate("/register");
     }
   };
 
@@ -55,26 +55,26 @@ export default function FreelancerRegister({ onBack }) {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setAvatarError('');
+    setAvatarError("");
 
     if (file) {
-      console.log('File information:', {
+      console.log("File information:", {
         name: file.name,
         type: file.type,
-        size: file.size
+        size: file.size,
       });
 
       // Kiểm tra kích thước file (giới hạn 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        setAvatarError('Kích thước ảnh không được vượt quá 5MB');
+        setAvatarError("Kích thước ảnh không được vượt quá 5MB");
         return;
       }
 
       // Kiểm tra định dạng file
-      const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      const validTypes = ["image/jpeg", "image/png", "image/jpg"];
       if (!validTypes.includes(file.type.toLowerCase())) {
-        console.log('Invalid file type:', file.type);
-        setAvatarError('Chỉ chấp nhận file ảnh định dạng JPG, JPEG hoặc PNG');
+        console.log("Invalid file type:", file.type);
+        setAvatarError("Chỉ chấp nhận file ảnh định dạng JPG, JPEG hoặc PNG");
         return;
       }
 
@@ -95,7 +95,7 @@ export default function FreelancerRegister({ onBack }) {
   const removeAvatar = () => {
     setAvatarPreview(null);
     setFormData({ ...formData, avatar: null });
-    setAvatarError('');
+    setAvatarError("");
   };
 
   const handleSubmit = async (e) => {
@@ -106,16 +106,16 @@ export default function FreelancerRegister({ onBack }) {
     }
 
     // Log toàn bộ formData để kiểm tra
-    console.log('Current formData:', formData);
+    console.log("Current formData:", formData);
 
     // Kiểm tra các trường bắt buộc
     if (!formData.username || !formData.password || !formData.email) {
-      console.log('Missing required fields:', {
+      console.log("Missing required fields:", {
         username: formData.username,
         password: formData.password,
-        email: formData.email
+        email: formData.email,
       });
-      alert('Vui lòng điền đầy đủ thông tin Username, Password và Email');
+      alert("Vui lòng điền đầy đủ thông tin Username, Password và Email");
       setStep(1);
       return;
     }
@@ -123,47 +123,47 @@ export default function FreelancerRegister({ onBack }) {
     try {
       // Tạo FormData object để gửi file
       const formDataToSend = new FormData();
-      
+
       // Thêm các trường thông tin vào FormData
-      Object.keys(formData).forEach(key => {
-        if (key === 'avatar' && formData[key]) {
-          formDataToSend.append('avatar', formData[key]);
-        } else if (key === 'location' && formData[key]) {
-          formDataToSend.append('location', formData[key].label);
+      Object.keys(formData).forEach((key) => {
+        if (key === "avatar" && formData[key]) {
+          formDataToSend.append("avatar", formData[key]);
+        } else if (key === "location" && formData[key]) {
+          formDataToSend.append("location", formData[key].label);
         } else if (formData[key]) {
           formDataToSend.append(key, formData[key].toString());
         }
       });
 
       // Log ra để kiểm tra dữ liệu trước khi gửi
-      console.log('FormData contents:');
+      console.log("FormData contents:");
       for (let pair of formDataToSend.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
+        console.log(pair[0] + ": " + pair[1]);
       }
 
       const response = await fetch(
-        'http://localhost:3000/api/freelancer/register',
+        "http://localhost:3000/api/freelancer/register",
         {
-          method: 'POST',
+          method: "POST",
           body: formDataToSend,
         }
       );
 
       const data = await response.json();
-      console.log('Server response:', data);
-      
+      console.log("Server response:", data);
+
       if (!response.ok) {
-        throw new Error(data.message || 'Đăng ký thất bại!');
+        throw new Error(data.message || "Đăng ký thất bại!");
       }
 
-      alert('Đăng ký thành công!');
+      alert("Đăng ký thành công!");
       connectSocket();
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
-      console.error('Registration error:', error);
-      if (error.message.includes('Username, password and email are required')) {
+      console.error("Registration error:", error);
+      if (error.message.includes("Username, password and email are required")) {
         setStep(1);
-        alert('Vui lòng điền đầy đủ thông tin Username, Password và Email');
+        alert("Vui lòng điền đầy đủ thông tin Username, Password và Email");
       } else {
         alert(error.message);
       }
@@ -174,13 +174,13 @@ export default function FreelancerRegister({ onBack }) {
     <AuthLayout>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">
-          {step === 1 ? 'Đăng ký Freelancer' : 'Hoàn tất hồ sơ'}
+          {step === 1 ? "Đăng ký Freelancer" : "Hoàn tất hồ sơ"}
         </h1>
         <p
           onClick={handleBack}
           className="text-sm text-gray-400 mt-4 mb-2 hover:underline cursor-pointer"
         >
-          {step===1 ? '← Quay lại chọn vai trò' : '← Trở về'}
+          {step === 1 ? "← Quay lại chọn vai trò" : "← Trở về"}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -309,7 +309,7 @@ export default function FreelancerRegister({ onBack }) {
                     accept="image/png, image/jpeg, image/jpg"
                   />
                 </div>
-                
+
                 {avatarError && (
                   <p className="text-red-500 text-sm mt-1">{avatarError}</p>
                 )}
@@ -339,7 +339,7 @@ export default function FreelancerRegister({ onBack }) {
             type="submit"
             className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition font-semibold shadow-md"
           >
-            {step === 1 ? 'Tiếp tục' : 'Tạo tài khoản'}
+            {step === 1 ? "Tiếp tục" : "Tạo tài khoản"}
           </button>
         </form>
       </div>

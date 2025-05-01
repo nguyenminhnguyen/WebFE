@@ -38,7 +38,6 @@ export default function AuthLogin() {
       });
 
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.message || "Đăng nhập thất bại!");
       }
@@ -71,8 +70,23 @@ export default function AuthLogin() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleSocialLogin = (provider) => {
-    console.log(`Login with ${provider}`);
-    // TODO: redirect tới OAuth tương ứng
+    if (!role) {
+      alert("Vui lòng chọn vai trò trước khi đăng nhập.");
+      return;
+    }
+
+    if (provider === "google") {
+      // Redirect to Google OAuth endpoint
+      const endpoint =
+        role === "freelancer"
+          ? `http://localhost:3000/auth/freelancer/google`
+          : `http://localhost:3000/auth/employer/google`;
+      window.location.href = endpoint;
+    } else if (provider === "facebook") {
+      // Handle Facebook login if needed
+      window.location.href = "http://localhost:3000/auth/employer/facebook";
+    }
+    
   };
   const handleBack = () => {
     navigate("/");
