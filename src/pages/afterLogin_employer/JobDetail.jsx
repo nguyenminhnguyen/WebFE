@@ -140,7 +140,7 @@ const JobDetail = () => {
         const data = await response.json();
         if (data.status === "Success") {
           // Xóa proposal khỏi danh sách
-          setProposals((prev) => prev.filter((p) => p.id !== proposalId));
+          setProposals((prev) => prev.filter((p) => p._id !== proposalId));
           setShowModal(false); // Đóng modal nếu đang mở
         }
       } else {
@@ -165,7 +165,7 @@ const JobDetail = () => {
         const data = await response.json();
         if (data.status === "Success") {
           setProposals((prev) =>
-            prev.map((p) => (p.id === proposalId ? { ...p, status: action } : p))
+            prev.map((p) => (p._id === proposalId ? { ...p, status: action } : p))
           );
         }
       }
@@ -190,6 +190,7 @@ const JobDetail = () => {
           setSelectedProposal={setSelectedProposal}
           setShowModal={setShowModal}
           handleProposalAction={handleProposalAction}
+          jobId={id}
         />
       )}
       {activeTab === "hired" && (
