@@ -35,11 +35,19 @@ const JobStep = ({ currentStep, formData, handleInputChange, setFormData }) => {
         )}
 
         {currentStep === 5 && (
-          <JobStep5 formData={formData} setFormData={setFormData} handleInputChange={handleInputChange}/>
+          <JobStep5
+            formData={formData}
+            setFormData={setFormData}
+            handleInputChange={handleInputChange}
+          />
         )}
 
         {currentStep === 6 && (
-          <JobStep6 formData={formData} setFormData={setFormData} handleInputChange={handleInputChange}/>
+          <JobStep6
+            formData={formData}
+            setFormData={setFormData}
+            handleInputChange={handleInputChange}
+          />
         )}
       </div>
     </AnimatedPage>

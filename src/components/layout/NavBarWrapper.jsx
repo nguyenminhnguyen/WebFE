@@ -38,11 +38,10 @@ export default function NavBarWrapper() {
     { label: "Freelancer", path: "/info/freelancer" },
   ];
   const handleLogout = () => {
-    // Xóa dữ liệu khỏi sessionStorage và localStorage
-    sessionStorage.removeItem("role");
-    sessionStorage.removeItem("token");
-    localStorage.removeItem("role"); // Nếu bạn lưu role ở localStorage
-    localStorage.removeItem("token"); // Nếu bạn lưu token ở localStorage
+    // Xóa dữ liệu khỏi localStorage
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     // Cập nhật lại state trong React
     setRole(null);
     setToken(null);

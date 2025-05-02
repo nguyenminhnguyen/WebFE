@@ -2,8 +2,12 @@ import api from "./config";
 
 const getFreelancerProfile = async (freelancerId) => {
   try {
+    const token = localStorage.getItem("token");
     const response = await api.get("/freelancer/getprofile", {
       params: { freelancerId }, // Truyền freelancerId qua query parameters
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     return response.data;
   } catch (error) {
