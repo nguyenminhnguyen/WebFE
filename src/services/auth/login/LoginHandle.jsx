@@ -33,7 +33,7 @@ export default function AuthLogin() {
           : "http://localhost:3000/api/employer/login";
 
       const response = await axios.post(endpoint, formData, {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
 
       const data = response.data;
@@ -58,8 +58,11 @@ export default function AuthLogin() {
         // Nếu dest bắt đầu bằng /freelancer/ hoặc /employer/
         if (dest.startsWith("/freelancer/") || dest.startsWith("/employer/")) {
           // Kiểm tra role có phù hợp với dest không
-          if ((dest.startsWith("/freelancer/") && data.user.role === "freelancer") ||
-              (dest.startsWith("/employer/") && data.user.role === "employer")) {
+          if (
+            (dest.startsWith("/freelancer/") &&
+              data.user.role === "freelancer") ||
+            (dest.startsWith("/employer/") && data.user.role === "employer")
+          ) {
             navigate(dest, { replace: true });
           } else {
             // Nếu role không phù hợp, chuyển về dashboard tương ứng
@@ -94,8 +97,27 @@ export default function AuthLogin() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleSocialLogin = (provider) => {
-    console.log(`Login with ${provider}`);
-    // TODO: redirect tới OAuth tương ứng
+    if (!role) {
+      alert("Vui lòng chọn vai trò trước khi đăng nhập.");
+      return;
+    }
+
+    if (provider === "google") {
+      // Redirect to Google OAuth endpoint
+      const endpoint =
+        role === "freelancer"
+          ? `http://localhost:3000/auth/freelancer/google`
+          : `http://localhost:3000/auth/employer/google`;
+      window.location.href = endpoint;
+    } else if (provider === "facebook") {
+      // Handle Facebook login if needed
+      // Redirect to Google OAuth endpoint
+      const endpoint =
+        role === "freelancer"
+          ? `http://localhost:3000/auth/freelancer/facebook`
+          : `http://localhost:3000/auth/employer/facebook`;
+      window.location.href = endpoint;
+    }
   };
   const handleBack = () => {
     navigate("/");

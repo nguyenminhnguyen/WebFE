@@ -5,7 +5,6 @@ import { AnimatePresence } from "framer-motion";
 import AnimatedPage from "../components/animation/animated_pages"; // dùng bản chuẩn đã style
 import NavBarWrapper from "../components/layout/NavBarWrapper";
 import ProtectedRoute from "../routes/ProtectedRoutes";
-// import DashboardNavbar from "../components/afterLogin_freelancer/DashboardNavbar";
 import NavBar from "../components/layout/navbar";
 // Pages
 import HomePage from "../pages/HomePage/HomePage";
@@ -209,6 +208,7 @@ export default function AnimatedRoutes() {
         />
          <Route path="/freelancer/callback" element={<GoogleCallback />} />
         <Route path="/employer/callback" element={<GoogleCallback />} />
+        
       </Routes>
     </AnimatePresence>
   );

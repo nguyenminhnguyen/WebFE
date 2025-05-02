@@ -1,95 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import axios from "axios";
 
 const isAuthenticated = () => {
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
-  console.log("Auth Check - Token:", token);
-  console.log("Auth Check - Role:", role);
-  return !!token && !!role;
+  return !!localStorage.getItem("token"); // đúng nghĩa: có token thì mới là đã login
 };
 
 const getUserRole = () => {
-  const role = localStorage.getItem("role");
-  console.log("Get User Role:", role);
-  return role;
+  return localStorage.getItem("role");
 };
 
 const isFreelancerRoute = (path) => {
-  const isFreelancer = path.startsWith("/freelancer/");
-  console.log("Is Freelancer Route:", isFreelancer, "Path:", path);
-  return isFreelancer;
+  return path.startsWith("/freelancer/");
 };
 
 const isEmployerRoute = (path) => {
-  const isEmployer = path.startsWith("/employer/");
-  console.log("Is Employer Route:", isEmployer, "Path:", path);
-  return isEmployer;
+  return path.startsWith("/employer/");
 };
 
 export default function ProtectedRoute({ children }) {
   const location = useLocation();
   const userRole = getUserRole();
-  const [isValidating, setIsValidating] = useState(true);
-  const [isValid, setIsValid] = useState(false);
 
-  useEffect(() => {
-    const validateToken = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setIsValidating(false);
-        setIsValid(false);
-        return;
-      }
-
-      try {
-        // Gọi API để validate token
-        await axios.get("http://localhost:3000/api/auth/validate", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setIsValid(true);
-      } catch (error) {
-        console.error("Token validation failed:", error);
-        // Xóa token không hợp lệ
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
-        localStorage.removeItem("user");
-        setIsValid(false);
-      } finally {
-        setIsValidating(false);
-      }
-    };
-
-    validateToken();
-  }, []);
-
-  console.log("Protected Route - Current Path:", location.pathname);
-  console.log("Protected Route - User Role:", userRole);
-  console.log("Protected Route - Is Validating:", isValidating);
-  console.log("Protected Route - Is Valid:", isValid);
-
-  if (isValidating) {
-    return <div>Đang kiểm tra đăng nhập...</div>;
-  }
-
-  if (!isValid || !isAuthenticated()) {
-    console.log("Not authenticated or token invalid, redirecting to login");
+  if (!isAuthenticated()) {
+    // Chưa đăng nhập → redirect đến login kèm ?dest
     return <Navigate to={`/login?dest=${location.pathname}`} replace />;
   }
 
+  // Kiểm tra quyền truy cập dựa trên role
   if (isFreelancerRoute(location.pathname) && userRole !== "freelancer") {
-    console.log("Freelancer route but not freelancer role, redirecting to home");
+    // Nếu là route của freelancer nhưng user không phải freelancer
     return <Navigate to="/" replace />;
   }
 
   if (isEmployerRoute(location.pathname) && userRole !== "employer") {
-    console.log("Employer route but not employer role, redirecting to home");
+    // Nếu là route của employer nhưng user không phải employer
     return <Navigate to="/" replace />;
   }
 
-  console.log("Access granted to route:", location.pathname);
+  // Đã đăng nhập và có quyền truy cập → cho hiển thị nội dung
   return children;
 }

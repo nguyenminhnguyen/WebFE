@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { connectSocket } from "../../../services/socket";
 
-export default function GoogleCallback() {
+export default function FacebookCallback() {
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const handleGoogleCallback = async () => {
+    const handleFacebookCallback = async () => {
       try {
         const params = new URLSearchParams(location.search);
         const token = params.get("token");
@@ -20,7 +20,7 @@ export default function GoogleCallback() {
         // Giải mã token để lấy thông tin role và user
         const tokenPayload = JSON.parse(atob(token.split(".")[1]));
         const userRole = tokenPayload.role;
-       // const userId = tokenPayload.user_id;
+        // const userId = tokenPayload.user_id;
         console.log("Token payload:", tokenPayload);
 
         // Parse user data
@@ -50,7 +50,7 @@ export default function GoogleCallback() {
       }
     };
 
-    handleGoogleCallback();
+    handleFacebookCallback();
   }, [location, navigate]);
 
   return (
