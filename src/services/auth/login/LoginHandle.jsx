@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import SocialButtons from "../../../components/login/social-button";
 import { connectSocket } from "../../../services/socket";
+import axios from "axios";
 
 export default function AuthLogin() {
   const navigate = useNavigate();
@@ -31,39 +32,61 @@ export default function AuthLogin() {
           ? "http://localhost:3000/api/freelancer/login"
           : "http://localhost:3000/api/employer/login";
 
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData), // `formData` chứa email, password,...
+      const response = await axios.post(endpoint, formData, {
+        headers: { "Content-Type": "application/json" }
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Đăng nhập thất bại!");
-      }
+      const data = response.data;
+      console.log("Login response data:", data);
 
       // 👉 Lưu token, role và user data vào localStorage
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("role", data.user.role);
       localStorage.setItem("user", JSON.stringify(data.user));
 
+      // Debug localStorage
+      console.log("Stored token:", localStorage.getItem("token"));
+      console.log("Stored role:", localStorage.getItem("role"));
+      console.log("Stored user:", localStorage.getItem("user"));
+
       // 👉 Kết nối socket sau khi đăng nhập thành công
       connectSocket();
 
       // 👉 Chuyển trang tùy theo vai trò hoặc dest
       if (dest) {
-        return navigate(dest);
+        console.log("Navigating to dest:", dest);
+        // Nếu dest bắt đầu bằng /freelancer/ hoặc /employer/
+        if (dest.startsWith("/freelancer/") || dest.startsWith("/employer/")) {
+          // Kiểm tra role có phù hợp với dest không
+          if ((dest.startsWith("/freelancer/") && data.user.role === "freelancer") ||
+              (dest.startsWith("/employer/") && data.user.role === "employer")) {
+            navigate(dest, { replace: true });
+          } else {
+            // Nếu role không phù hợp, chuyển về dashboard tương ứng
+            if (data.user.role === "freelancer") {
+              navigate("/freelancer/dashboard", { replace: true });
+            } else {
+              navigate("/employer/dashboard", { replace: true });
+            }
+          }
+        } else {
+          // Nếu dest không phải là route của freelancer hoặc employer
+          navigate(dest, { replace: true });
+        }
+        return;
       }
 
+      // Nếu không có dest, chuyển về dashboard tương ứng
       if (data.user.role === "freelancer") {
-        return navigate("/freelancer/dashboard");
+        console.log("Navigating to freelancer dashboard");
+        navigate("/freelancer/dashboard", { replace: true });
       } else {
-        return navigate("/employer/dashboard");
+        console.log("Navigating to employer dashboard");
+        navigate("/employer/dashboard", { replace: true });
       }
     } catch (err) {
       console.error("Login error:", err);
-      alert(err.message || "Đăng nhập thất bại.");
+      alert(err.response?.data?.message || "Đăng nhập thất bại.");
     }
   };
 

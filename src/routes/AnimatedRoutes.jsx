@@ -135,12 +135,14 @@ export default function AnimatedRoutes() {
         <Route
           path="/employer/dashboard"
           element={
-            <AnimatedPage>
-              <NavBarWrapper />
-              <div className="mx-[10vw]">
-                <Employer />
-              </div>
-            </AnimatedPage>
+            <ProtectedRoute>
+              <AnimatedPage>
+                <NavBarWrapper />
+                <div className="mx-[10vw]">
+                  <Employer />
+                </div>
+              </AnimatedPage>
+            </ProtectedRoute>
           }
         />
         <Route
