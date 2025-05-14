@@ -88,6 +88,33 @@ const JobDetail = () => {
     fetchProposals();
   }, [id, activeTab]);
 
+  // Refetch lại job mỗi khi chuyển sang tab proposals để lấy trạng thái mới nhất (pay, v.v.)
+  useEffect(() => {
+    if (activeTab === "proposals") {
+      const token = localStorage.getItem("token");
+      fetch(`http://localhost:3000/api/jobs/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Không thể tải dữ liệu công việc");
+          return res.json();
+        })
+        .then((data) => {
+          if (data.status === "Success") {
+            setJob(data.data);
+            console.log("Job data (tab proposals):", data.data);
+          }
+        })
+        .catch((err) => {
+          console.error("Lỗi khi refetch job:", err);
+        });
+    }
+  }, [activeTab, id]);
+
   if (loading) return <p className="mt-4">Đang tải dữ liệu...</p>;
 
   if (job === null || job === undefined) {
@@ -191,6 +218,7 @@ const JobDetail = () => {
           setShowModal={setShowModal}
           handleProposalAction={handleProposalAction}
           jobId={id}
+          job={job}
         />
       )}
       {activeTab === "hired" && (
@@ -198,6 +226,7 @@ const JobDetail = () => {
           proposals={proposals}
           setSelectedProposal={setSelectedProposal}
           setShowModal={setShowModal}
+          job={job}
         />
       )}
 

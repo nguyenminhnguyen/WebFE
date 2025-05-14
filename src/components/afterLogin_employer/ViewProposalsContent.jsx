@@ -7,7 +7,8 @@ const ViewProposalsContent = ({
   setSelectedProposal, 
   setShowModal, 
   handleProposalAction,
-  jobId
+  jobId,
+  job
 }) => {
   const handleAcceptAndPay = async (proposalId) => {
     try {
@@ -63,15 +64,17 @@ const ViewProposalsContent = ({
         </p>
       ) : (
         <div className="space-y-4">
-          {proposals.map((proposal) => (
+          {proposals
+            .filter(() => !(job && job.pay))
+            .map((proposal) => (
             <div
-              key={proposal.id}
+              key={proposal._id}
               className="border rounded-lg p-4 hover:bg-gray-100 transition-colors cursor-pointer"
               onClick={() => {
                 setSelectedProposal({
                   ...proposal,
                   source: 'proposals',
-                  id: proposal.id
+                  id: proposal._id
                 });
                 setShowModal(true);
               }}
@@ -118,13 +121,17 @@ const ViewProposalsContent = ({
                           ? "bg-yellow-100 text-yellow-800"
                           : proposal.status === "accepted"
                           ? "bg-green-100 text-green-800"
+                          : job && job.pay
+                          ? "bg-blue-100 text-blue-800"
                           : "bg-red-100 text-red-800"
                       }`}
                     >
                       {proposal.status === "pending"
                         ? "Đang chờ"
-                        : proposal.status === "accepted"
+                        : proposal.status === "accepted" && !(job && job.pay)
                         ? "Đã chấp nhận"
+                        : job && job.pay
+                        ? "Đã thanh toán"
                         : "Đã từ chối"}
                     </span>
                   </div>
@@ -163,7 +170,7 @@ const ViewProposalsContent = ({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleAcceptAndPay(proposal.id);
+                            handleAcceptAndPay(proposal._id);
                           }}
                           className="px-3 py-1 text-sm font-medium bg-green-600 text-white rounded-full hover:bg-green-700"
                         >
@@ -172,7 +179,7 @@ const ViewProposalsContent = ({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleProposalAction(proposal.id, "rejected");
+                            handleProposalAction(proposal._id, "rejected");
                           }}
                           className="px-3 py-1 text-sm bg-red-600 text-white rounded-full hover:bg-red-700"
                         >

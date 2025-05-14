@@ -1,6 +1,15 @@
 import React from "react";
 
-const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal }) => {
+const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal, job }) => {
+  // Chỉ hiển thị nếu job.pay = true
+  if (!(job && job.pay)) {
+    return (
+      <div className="bg-white rounded-lg shadow-md">
+        <h2 className="text-xl font-bold mt-12 ml-5 mb-6">Freelancer đã thuê</h2>
+        <p className="text-gray-600 text-center">Chưa có freelancer nào được thuê</p>
+      </div>
+    );
+  }
   const acceptedProposals = proposals.filter(p => p.status === "accepted");
 
   return (
