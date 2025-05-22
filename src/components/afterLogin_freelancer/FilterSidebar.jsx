@@ -92,9 +92,7 @@ const FilterSidebar = ({
             <option value="newest">Mới nhất</option>
             <option value="oldest">Cũ nhất</option>
             <option value="salary-desc">Ngân sách cao nhất</option>
-            <option value="salary-asc">Ngân sách thấp nhất</option>
-            <option value="applications-desc">Nhiều ứng viên nhất</option>
-            <option value="applications-asc">Ít ứng viên nhất</option>
+            <option value="salary-asc">Ngân sách thấp nhất</option> 
           </select>
         </div>
       </div>

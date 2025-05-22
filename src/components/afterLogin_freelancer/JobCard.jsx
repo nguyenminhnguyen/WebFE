@@ -62,10 +62,6 @@ const JobCard = ({ job, index, currentPage, jobsPerPage, onViewDetails }) => {
         <div className="mt-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex items-center text-sm text-gray-500">
-              <FaUserFriends className="w-4 h-4 mr-1" />
-              {job.appliedCount || 0} ứng viên
-            </div>
-            <div className="flex items-center text-sm text-gray-500">
               <FaBuilding className="w-4 h-4 mr-1" />
               {job.employer.companyName}
             </div>

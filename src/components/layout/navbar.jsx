@@ -78,7 +78,7 @@ export default function NavBar({
 
   const freelancerMenuItems = [
     { label: "Tìm việc", path: "/freelancer/dashboard", icon: FaBriefcase },
-    { label: "Hồ sơ", path: "/freelancer/profile", icon: FaUserCircle },
+    { label: "Quản lý việc làm", path: "/freelancer/jobs-manage", icon: FaBriefcase },
     { label: "Tin nhắn", path: "/freelancer/messages", icon: FaEnvelope },
     { label: "Thông báo", path: "/freelancer/notifications", icon: FaBell },
   ];

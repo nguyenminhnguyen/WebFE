@@ -337,14 +337,19 @@ const ProjectsList = () => {
       {/* Search and Filter Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900">Tìm việc làm</h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Tìm kiếm và ứng tuyển các công việc phù hợp với kỹ năng của bạn
-              </p>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Tìm việc làm
+                </h1>
+                <p className="mt-1 text-sm text-gray-500">
+                  Tìm kiếm và ứng tuyển các công việc phù hợp với kỹ năng của
+                  bạn
+                </p>
+              </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <div className="relative flex-1">
                 <input
                   type="text"
@@ -359,7 +364,7 @@ const ProjectsList = () => {
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium flex items-center space-x-2 hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium flex items-center justify-center sm:justify-start space-x-2 hover:bg-gray-50"
               >
                 <FaFilter className="h-4 w-4" />
                 <span>Bộ lọc</span>
@@ -373,44 +378,28 @@ const ProjectsList = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           {showFilters && (
-            <FilterSidebar
-              filters={filters}
-              filterOptions={filterOptions}
-              handleFilterChange={handleFilterChange}
-              clearFilters={clearFilters}
-            />
+            <div className="w-full lg:w-64">
+              <FilterSidebar
+                filters={filters}
+                filterOptions={filterOptions}
+                handleFilterChange={handleFilterChange}
+                clearFilters={clearFilters}
+              />
+            </div>
           )}
 
           {/* Main Content */}
           <div className="flex-1">
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Tổng số công việc
-                </h3>
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Tổng số công việc
+                  </h3>
+                </div>
                 <p className="text-3xl font-bold text-[#14a800]">
                   {totalJobs.toLocaleString()}
-                </p>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Đã ứng tuyển
-                </h3>
-                <p className="text-3xl font-bold text-[#14a800]">
-                  {jobs.reduce((acc, job) => acc + job.appliedCount, 0)}
-                </p>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Lương trung bình
-                </h3>
-                <p className="text-3xl font-bold text-[#14a800]">
-                  $
-                  {Math.round(
-                    jobs.reduce((acc, job) => acc + job.salary, 0) /
-                      (jobs.length || 1)
-                  ).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -443,38 +432,51 @@ const ProjectsList = () => {
                     ))}
                   </div>
                   {!loading && jobs.length > 0 && totalPages > 1 && (
-                    <div className="mt-8 flex items-center justify-between">
-                      <div className="text-sm text-gray-500">
-                        Hiển thị {jobs.length} công việc trên trang{" "}
-                        {currentPage} / {totalPages}
+                    <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="text-sm text-gray-500 text-center sm:text-left">
+                        Hiển thị {jobs.length} công việc
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {currentPage > 1 && (
-                          <button
-                            onClick={() => setCurrentPage((prev) => prev - 1)}
-                            className="px-3 py-1.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-50"
-                          >
-                            <FaChevronLeft className="h-4 w-4" />
-                          </button>
-                        )}
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => setCurrentPage((prev) => prev - 1)}
+                          disabled={currentPage === 1}
+                          className="p-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <FaChevronLeft className="h-4 w-4" />
+                        </button>
 
-                        {Array.from({ length: totalPages }, (_, i) => i + 1)
-                          .filter(
-                            (page) =>
-                              page === 1 ||
-                              page === totalPages ||
-                              (page >= currentPage - 1 &&
-                                page <= currentPage + 1)
-                          )
-                          .map((page, index, array) => {
-                            if (index > 0 && array[index - 1] !== page - 1) {
-                              return [
-                                <span
-                                  key={`ellipsis-${page}`}
-                                  className="px-3 py-1.5 text-gray-500"
-                                >
-                                  ...
-                                </span>,
+                        <div className="flex items-center gap-1">
+                          {Array.from({ length: totalPages }, (_, i) => i + 1)
+                            .filter(
+                              (page) =>
+                                page === 1 ||
+                                page === totalPages ||
+                                (page >= currentPage - 1 &&
+                                  page <= currentPage + 1)
+                            )
+                            .map((page, index, array) => {
+                              if (index > 0 && array[index - 1] !== page - 1) {
+                                return [
+                                  <span
+                                    key={`ellipsis-${page}`}
+                                    className="px-2 text-gray-500"
+                                  >
+                                    ...
+                                  </span>,
+                                  <button
+                                    key={page}
+                                    onClick={() => setCurrentPage(page)}
+                                    className={`px-3 py-1.5 rounded border ${
+                                      currentPage === page
+                                        ? "border-[#14a800] bg-[#14a800] text-white"
+                                        : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                                    }`}
+                                  >
+                                    {page}
+                                  </button>,
+                                ];
+                              }
+                              return (
                                 <button
                                   key={page}
                                   onClick={() => setCurrentPage(page)}
@@ -485,32 +487,18 @@ const ProjectsList = () => {
                                   }`}
                                 >
                                   {page}
-                                </button>,
-                              ];
-                            }
-                            return (
-                              <button
-                                key={page}
-                                onClick={() => setCurrentPage(page)}
-                                className={`px-3 py-1.5 rounded border ${
-                                  currentPage === page
-                                    ? "border-[#14a800] bg-[#14a800] text-white"
-                                    : "border-gray-300 text-gray-600 hover:bg-gray-50"
-                                }`}
-                              >
-                                {page}
-                              </button>
-                            );
-                          })}
+                                </button>
+                              );
+                            })}
+                        </div>
 
-                        {currentPage < totalPages && (
-                          <button
-                            onClick={() => setCurrentPage((prev) => prev + 1)}
-                            className="px-3 py-1.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-50"
-                          >
-                            <FaChevronRight className="h-4 w-4" />
-                          </button>
-                        )}
+                        <button
+                          onClick={() => setCurrentPage((prev) => prev + 1)}
+                          disabled={currentPage === totalPages}
+                          className="p-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <FaChevronRight className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
                   )}

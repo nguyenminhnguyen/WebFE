@@ -207,10 +207,10 @@ const Profile = () => {
       {/* Profile Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-8">
+          <div className="py-6 sm:py-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
               {/* Avatar and Basic Info */}
-              <div className="flex items-center gap-6 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 w-full sm:w-auto">
                 <div className="relative group">
                   <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-white border-4 border-[#14a800] shadow-sm overflow-hidden transform group-hover:scale-105 transition-all duration-300">
                     {profile.avatar ? (
@@ -222,7 +222,6 @@ const Profile = () => {
                         alt="Profile"
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          console.log("Error loading avatar:", e.target.src);
                           e.target.style.display = "none";
                           e.target.parentElement.querySelector(
                             ".fallback-icon"
@@ -241,11 +240,11 @@ const Profile = () => {
                     </button>
                   )}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 text-center sm:text-left">
                   <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
                     {profile.name}
                   </h1>
-                  <div className="mt-3 flex flex-wrap items-center gap-6">
+                  <div className="mt-3 flex flex-col sm:flex-row flex-wrap items-center sm:items-start gap-4 sm:gap-6">
                     <div className="flex items-center text-gray-600 hover:text-[#14a800] transition-colors">
                       <FaMapMarkerAlt className="mr-2 text-[#14a800]" />
                       <span>{profile.location}</span>
@@ -263,19 +262,19 @@ const Profile = () => {
               </div>
 
               {/* Edit/Save Button */}
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
                 {isEditing ? (
                   <>
                     <button
                       onClick={handleSubmit}
-                      className="bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors flex items-center gap-2"
+                      className="flex-1 sm:flex-none bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors flex items-center justify-center gap-2"
                     >
                       <FaSave />
                       Lưu thay đổi
                     </button>
                     <button
                       onClick={() => setIsEditing(false)}
-                      className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2"
+                      className="flex-1 sm:flex-none bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
                     >
                       <FaTimes />
                       Hủy
@@ -284,7 +283,7 @@ const Profile = () => {
                 ) : (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors flex items-center gap-2"
+                    className="w-full sm:w-auto bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors flex items-center justify-center gap-2"
                   >
                     <FaEdit />
                     Chỉnh sửa
@@ -302,7 +301,7 @@ const Profile = () => {
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-8">
             {/* About */}
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Giới thiệu
               </h2>
@@ -322,13 +321,13 @@ const Profile = () => {
             </div>
 
             {/* Skills */}
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Kỹ năng
               </h2>
               {isEditing ? (
                 <div className="space-y-4">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       value={newSkill}
@@ -382,7 +381,7 @@ const Profile = () => {
             </div>
 
             {/* Experience */}
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Kinh nghiệm
               </h2>
@@ -404,7 +403,7 @@ const Profile = () => {
             </div>
 
             {/* Education */}
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Học vấn
               </h2>
@@ -432,7 +431,7 @@ const Profile = () => {
                         className="w-full p-2 border border-gray-300 rounded-lg focus:border-[#14a800] focus:outline-none"
                         placeholder="Bằng cấp"
                       />
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <div className="flex-1">
                           <label className="block text-sm text-gray-600 mb-1">
                             Ngày bắt đầu
@@ -493,7 +492,7 @@ const Profile = () => {
                   ))}
                   <button
                     onClick={addEducation}
-                    className="bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors"
+                    className="w-full sm:w-auto bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors"
                   >
                     Thêm học vấn
                   </button>
@@ -529,7 +528,7 @@ const Profile = () => {
           {/* Right Column */}
           <div className="space-y-8">
             {/* Availability */}
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Tình trạng
               </h2>
@@ -540,7 +539,7 @@ const Profile = () => {
             </div>
 
             {/* Hourly Rate */}
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Mức lương
               </h2>

@@ -16,6 +16,7 @@ import ClientRegister from "../services/auth/register/EmployerRegister";
 import FreelancerRegister from "../services/auth/register/FreelancerRegister";
 import Freelancer from "../pages/afterLogin_freelancer/freelancer";
 import Profile from "../components/afterLogin_freelancer/Profile";
+import EmployerProfile from "../components/afterLogin_employer/EmployerProfile";
 import Employer from "../pages/afterLogin_employer/employer";
 import JobPostForm from "../pages/afterLogin_employer/JobPost";
 import PaymentReturn from "../pages/PaymentReturn";
@@ -23,6 +24,7 @@ import EmployerInfo from "../pages/info/EmployerInfo";
 import FreelancerInfo from "../pages/info/FreelancerInfo";
 import JobDetail from "../pages/afterLogin_employer/JobDetail";
 import GoogleCallback from "../services/auth/login/GoogleCallback";
+import JobsManage from "../pages/afterLogin_freelancer/JobsManage";
 
 export default function AnimatedRoutes() {
   const location = useLocation();
@@ -108,17 +110,6 @@ export default function AnimatedRoutes() {
           }
         />
         <Route
-          path="/freelancer/projects"
-          element={
-            <AnimatedPage>
-              <NavBarWrapper />
-              <div className="mx-[10vw]">
-                <ProjectsList />
-              </div>
-            </AnimatedPage>
-          }
-        />
-        <Route
           path="/freelancer/dashboard"
           element={
             <ProtectedRoute>
@@ -172,7 +163,19 @@ export default function AnimatedRoutes() {
             </AnimatedPage>
           }
         />
-
+<Route
+          path="/employer/profile"
+          element={
+            <ProtectedRoute>
+              <AnimatedPage>
+                <NavBar />
+                <div className="mx-[10vw]">
+                  <EmployerProfile />
+                </div>
+              </AnimatedPage>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/freelancer/profile"
           element={
@@ -181,6 +184,19 @@ export default function AnimatedRoutes() {
                 <NavBar />
                 <div className="mx-[10vw]">
                   <Profile />
+                </div>
+              </AnimatedPage>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/freelancer/jobs-manage"
+          element={
+            <ProtectedRoute>
+              <AnimatedPage>
+                <NavBar />
+                <div className="mx-[10vw]">
+                  <JobsManage />
                 </div>
               </AnimatedPage>
             </ProtectedRoute>
@@ -206,9 +222,22 @@ export default function AnimatedRoutes() {
             </AnimatedPage>
           }
         />
-         <Route path="/freelancer/callback" element={<GoogleCallback />} />
-        <Route path="/employer/callback" element={<GoogleCallback />} />
-        
+        <Route
+          path="/freelancer/callback"
+          element={
+            <AnimatedPage>
+              <GoogleCallback />
+            </AnimatedPage>
+          }
+        />
+        <Route
+          path="/employer/callback"
+          element={
+            <AnimatedPage>
+              <GoogleCallback />
+            </AnimatedPage>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );
