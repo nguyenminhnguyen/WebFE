@@ -1,12 +1,58 @@
 import React from "react";
+import { createPaymentOrder } from "../../services/paymentService";
 
 const ViewProposalsContent = ({ 
   proposals, 
   loadingProposals, 
   setSelectedProposal, 
   setShowModal, 
-  handleProposalAction 
+  handleProposalAction,
+  jobId,
+  job
 }) => {
+  const handleAcceptAndPay = async (proposalId) => {
+    try {
+      if (!jobId || jobId === 'undefined') {
+        alert('Không tìm thấy jobId. Vui lòng tải lại trang hoặc liên hệ quản trị viên.');
+        return;
+      }
+      console.log("jobId gửi lên create-order:", jobId);
+      // 1. Chấp nhận proposal
+      await handleProposalAction(proposalId, "accepted");
+      // 2. Sau khi accept thành công, tạo order PayPal
+      const orderData = await createPaymentOrder(jobId);
+      if (orderData.status === "Success") {
+        window.location.href = orderData.data.approvalUrl;
+        // Sau khi thanh toán xong, PayPal sẽ redirect về returnUrl của bạn
+        // Bạn nên cấu hình returnUrl ở backend là /employer/job-list hoặc /employer/dashboard
+      } else {
+        throw new Error(orderData.message || "Không thể tạo đơn hàng PayPal");
+      }
+    } catch (error) {
+      console.error("Lỗi khi xử lý thanh toán:", error);
+      alert(error.message || "Có lỗi xảy ra khi xử lý thanh toán");
+    }
+  };
+
+  const handlePayOnly = async () => {
+    try {
+      if (!jobId || jobId === 'undefined') {
+        alert('Không tìm thấy jobId. Vui lòng tải lại trang hoặc liên hệ quản trị viên.');
+        return;
+      }
+      const orderData = await createPaymentOrder(jobId);
+      if (orderData.status === "Success") {
+        window.location.href = orderData.data.approvalUrl;
+        // Sau khi thanh toán xong, PayPal sẽ redirect về returnUrl của bạn
+        // Bạn nên cấu hình returnUrl ở backend là /employer/job-list hoặc /employer/dashboard
+      } else {
+        throw new Error(orderData.message || "Không thể tạo đơn hàng PayPal");
+      }
+    } catch (error) {
+      alert(error.message || "Có lỗi xảy ra khi xử lý thanh toán");
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md relative">
       <h2 className="text-xl font-bold mt-12 ml-5 mb-6">Yêu cầu ứng tuyển</h2>
@@ -18,12 +64,18 @@ const ViewProposalsContent = ({
         </p>
       ) : (
         <div className="space-y-4">
-          {proposals.map((proposal) => (
+          {proposals
+            .filter(() => !(job && job.pay))
+            .map((proposal) => (
             <div
               key={proposal._id}
               className="border rounded-lg p-4 hover:bg-gray-100 transition-colors cursor-pointer"
               onClick={() => {
-                setSelectedProposal({...proposal, source: 'proposals'});
+                setSelectedProposal({
+                  ...proposal,
+                  source: 'proposals',
+                  id: proposal._id
+                });
                 setShowModal(true);
               }}
             >
@@ -69,13 +121,17 @@ const ViewProposalsContent = ({
                           ? "bg-yellow-100 text-yellow-800"
                           : proposal.status === "accepted"
                           ? "bg-green-100 text-green-800"
+                          : job && job.pay
+                          ? "bg-blue-100 text-blue-800"
                           : "bg-red-100 text-red-800"
                       }`}
                     >
                       {proposal.status === "pending"
                         ? "Đang chờ"
-                        : proposal.status === "accepted"
+                        : proposal.status === "accepted" && !(job && job.pay)
                         ? "Đã chấp nhận"
+                        : job && job.pay
+                        ? "Đã thanh toán"
                         : "Đã từ chối"}
                     </span>
                   </div>
@@ -114,22 +170,33 @@ const ViewProposalsContent = ({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleProposalAction(proposal.id, "accepted");
+                            handleAcceptAndPay(proposal._id);
                           }}
                           className="px-3 py-1 text-sm font-medium bg-green-600 text-white rounded-full hover:bg-green-700"
                         >
-                          Chấp nhận
+                          Chấp nhận và thanh toán
                         </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleProposalAction(proposal.id, "rejected");
+                            handleProposalAction(proposal._id, "rejected");
                           }}
                           className="px-3 py-1 text-sm bg-red-600 text-white rounded-full hover:bg-red-700"
                         >
                           Từ chối
                         </button>
                       </>
+                    )}
+                    {proposal.status === "accepted" && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePayOnly();
+                        }}
+                        className="px-3 py-1 text-sm font-medium bg-blue-600 text-white rounded-full hover:bg-blue-700"
+                      >
+                        Thanh toán
+                      </button>
                     )}
                   </div>
                 </div>

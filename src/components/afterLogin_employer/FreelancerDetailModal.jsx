@@ -226,7 +226,7 @@ const FreelancerDetailModal = ({
                 <>
                   <button
                     onClick={() =>
-                      handleProposalAction(selectedProposal.id, "accepted")
+                      handleProposalAction(selectedProposal._id, "accepted")
                     }
                     className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                   >
@@ -234,7 +234,7 @@ const FreelancerDetailModal = ({
                   </button>
                   <button
                     onClick={() =>
-                      handleProposalAction(selectedProposal.id, "rejected")
+                      handleProposalAction(selectedProposal._id, "rejected")
                     }
                     className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                   >

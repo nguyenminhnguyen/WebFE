@@ -19,6 +19,7 @@ function JobPostForm() {
     description: "",
     location: "",
   });
+  const [error, setError] = useState("");
 
   const isStepCompleted = () => {
     const {
@@ -82,9 +83,7 @@ function JobPostForm() {
       timeEstimation: formData.timeEstimation,
       experienceLevel: formData.experienceLevel,
       location: formData.location?.label,
-      skills: formData.skills,
-      returnUrl: `${window.location.origin}/payment/return`,
-      cancelUrl: `${window.location.origin}/payment/return?cancel=true`,
+      skills: formData.skills
     };
 
     const token = localStorage.getItem("token");
@@ -99,23 +98,22 @@ function JobPostForm() {
         body: JSON.stringify(dataToSend),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
       const result = await response.json();
       console.log("Response from server:", result);
 
-      // if (response.ok && result.data?.paymentUrl) {
-      //   // Lưu jobId vào localStorage
-      //   if (result.data.job?._id) {
-      //     localStorage.setItem("pendingJobId", result.data.job._id);
-      //   }
-
-      //   // Chuyển hướng trực tiếp đến PayPal
-      //   const paypalUrl = new URL(result.data.paymentUrl);
-      //   window.location.replace(paypalUrl.toString());
-      // } else {
-      //   throw new Error(result.message || "Failed to create job post");
-      // }
+      navigate("/employer/dashboard");
     } catch (error) {
-      console.log("Có lỗi xảy ra khi tạo job: " + error.message);
+      console.error("Lỗi chi tiết:", error);
+      if (error.message === "Failed to fetch") {
+        setError("Không thể kết nối đến server. Vui lòng kiểm tra lại kết nối mạng hoặc liên hệ quản trị viên.");
+      } else {
+        setError(error.message || "Có lỗi xảy ra khi tạo job");
+      }
     } finally {
       setIsSubmitting(false);
     }
