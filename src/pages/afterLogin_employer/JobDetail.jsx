@@ -139,15 +139,21 @@ const JobDetail = () => {
   }
 
   const handleProposalAction = async (proposalId, action) => {
+    console.log("handleProposalAction called with:", { proposalId, action });
     try {
       if (!proposalId) {
+        console.error("No proposalId provided");
         throw new Error("Không tìm thấy ID của proposal");
       }
 
       const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Không tìm thấy token xác thực");
+      }
       
       if (action === "rejected") {
         // Gọi API reject proposal
+        console.log("Calling reject API for proposal:", proposalId);
         const response = await fetch(
           `http://localhost:3000/api/jobs/proposals/${proposalId}/reject`,
           {
@@ -161,17 +167,20 @@ const JobDetail = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
+          console.error("Reject API error:", errorData);
           throw new Error(errorData.message || "Không thể từ chối proposal");
         }
 
         const data = await response.json();
+        console.log("Reject API response:", data);
         if (data.status === "Success") {
           // Xóa proposal khỏi danh sách
-          setProposals((prev) => prev.filter((p) => p._id !== proposalId));
+          setProposals((prev) => prev.filter((p) => p.id !== proposalId));
           setShowModal(false); // Đóng modal nếu đang mở
         }
       } else {
-        // Xử lý chấp nhận proposal như cũ
+        // Xử lý chấp nhận proposal
+        console.log("Calling accept API for proposal:", proposalId);
         const response = await fetch(
           `http://localhost:3000/api/jobs/proposals/${proposalId}/accept`,
           {
@@ -186,13 +195,15 @@ const JobDetail = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
+          console.error("Accept API error:", errorData);
           throw new Error(errorData.message || "Không thể cập nhật trạng thái");
         }
 
         const data = await response.json();
+        console.log("Accept API response:", data);
         if (data.status === "Success") {
           setProposals((prev) =>
-            prev.map((p) => (p._id === proposalId ? { ...p, status: action } : p))
+            prev.map((p) => (p.id === proposalId ? { ...p, status: action } : p))
           );
         }
       }
