@@ -1,15 +1,7 @@
 import React from "react";
 
 const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal, job }) => {
-  // Chỉ hiển thị nếu job.pay = true
-  if (!(job && job.pay)) {
-    return (
-      <div className="bg-white rounded-lg shadow-md">
-        <h2 className="text-xl font-bold mt-12 ml-5 mb-6">Freelancer đã thuê</h2>
-        <p className="text-gray-600 text-center">Chưa có freelancer nào được thuê</p>
-      </div>
-    );
-  }
+  // Lọc các proposal đã được chấp nhận
   const acceptedProposals = proposals.filter(p => p.status === "accepted");
 
   return (
@@ -65,7 +57,7 @@ const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal,
                     </span>
                   </div>
                   <p className="text-sm text-gray-700 mt-2 line-clamp-2">
-                    {proposal.freelancer.bio || "Chưa có giới thiệu"}
+                  {proposal.proposalText || "Chưa có đề xuất"}
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {proposal.freelancer.skills
