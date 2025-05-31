@@ -76,4 +76,30 @@ const postApplyJob = async ({ jobId, proposalText, bidAmount }) => {
   }
 };
 
-export { getFreelancerProfile, getFreelancerJobs, postApplyJob };
+const getRecommendedJobs = async () => {
+  try {
+    const response = await api.post("/freelancer/recommend/jobs-for-freelancer");
+    if (response.data.status === "Error") {
+      throw new Error(
+        response.data.message || "Failed to get recommended jobs"
+      );
+    }
+    return response;
+  } catch (error) {
+    console.error("Error fetching recommended jobs:", error);
+    if (error.response) {
+      throw new Error(
+        error.response.data.message || "Failed to get recommended jobs"
+      );
+    } else {
+      throw new Error(error.message || "Failed to get recommended jobs");
+    }
+  }
+};
+
+export {
+  getFreelancerProfile,
+  getFreelancerJobs,
+  postApplyJob,
+  getRecommendedJobs,
+};

@@ -10,9 +10,15 @@ import ConfirmationModal from "./ConfirmationModal";
 import JobCard from "./JobCard";
 import ApplyModal from "./ApplyModal";
 import FilterSidebar from "./FilterSidebar";
-import { getFreelancerJobs, postApplyJob } from "../../api/freelancer";
+import {
+  getFreelancerJobs,
+  postApplyJob,
+  getRecommendedJobs,
+} from "../../api/freelancer";
+import { useNavigate } from "react-router-dom";
+import RecommendedJobs from "./RecommendedJobs";
 
-const ProjectsList = () => {
+const ProjectsList = ({ isRecommended = false }) => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -58,6 +64,10 @@ const ProjectsList = () => {
     bidAmount: "",
   });
 
+  const [showRecommendedJobs, setShowRecommendedJobs] = useState(false);
+
+  const navigate = useNavigate();
+
   // Thêm useEffect để lấy freelancerId từ localStorage khi component mount
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -71,49 +81,59 @@ const ProjectsList = () => {
     const fetchJobs = async () => {
       try {
         setLoading(true);
-        const response = await getFreelancerJobs({
-          page: currentPage,
-          limit: jobsPerPage,
-          search: searchQuery || undefined,
-          location: filters.location || undefined,
-          salary: filters.salary || undefined,
-          experienceLevel: filters.experienceLevel || undefined,
-          duration: filters.duration || undefined,
-          sort: filters.sort || "newest",
-        });
+        let response;
 
-        console.log("API Response:", response);
-        console.log("Jobs Data:", response.data.jobs);
-        console.log("Pagination Info:", response.data.pagination);
+        if (isRecommended) {
+          response = await getRecommendedJobs();
+          const processedJobs = (response.data.data || []).map((job) => ({
+            ...job,
+            employer: job.employer || { companyName: "N/A" },
+            minSalary: job.minSalary || 0,
+            maxSalary: job.maxSalary || 0,
+            location: job.location || "N/A",
+            skills: job.skills || [],
+            description: job.description || "Không có mô tả",
+          }));
+          setJobs(processedJobs);
+          setTotalJobs(processedJobs.length);
+          setTotalPages(Math.ceil(processedJobs.length / jobsPerPage));
+        } else {
+          response = await getFreelancerJobs({
+            page: currentPage,
+            limit: jobsPerPage,
+            search: searchQuery || undefined,
+            location: filters.location || undefined,
+            salary: filters.salary || undefined,
+            experienceLevel: filters.experienceLevel || undefined,
+            duration: filters.duration || undefined,
+            sort: filters.sort || "newest",
+          });
 
-        const jobsData = response.data.jobs || [];
-        console.log("jobsData", jobsData);
-        setJobs(jobsData);
+          const jobsData = response.data.jobs || [];
+          setJobs(jobsData);
+          const paginationData = response.data.pagination;
+          setTotalPages(paginationData.totalPages);
+          setTotalJobs(paginationData.total);
 
-        // Cập nhật thông tin phân trang từ API
-        const paginationData = response.data.pagination;
-        setTotalPages(paginationData.totalPages);
-        setTotalJobs(paginationData.total);
+          if (currentPage > paginationData.totalPages) {
+            setCurrentPage(paginationData.totalPages);
+          }
 
-        // Nếu trang hiện tại lớn hơn tổng số trang, quay về trang cuối cùng
-        if (currentPage > paginationData.totalPages) {
-          setCurrentPage(paginationData.totalPages);
+          // Extract filter options from jobs data
+          const locations = [...new Set(jobsData.map((job) => job.location))];
+          const experienceLevels = [
+            ...new Set(jobsData.map((job) => job.experienceLevel)),
+          ];
+          const durations = [
+            ...new Set(jobsData.map((job) => job.timeEstimation)),
+          ];
+
+          setFilterOptions({
+            locations,
+            experienceLevels,
+            durations,
+          });
         }
-
-        // Extract filter options from jobs data
-        const locations = [...new Set(jobsData.map((job) => job.location))];
-        const experienceLevels = [
-          ...new Set(jobsData.map((job) => job.experienceLevel)),
-        ];
-        const durations = [
-          ...new Set(jobsData.map((job) => job.timeEstimation)),
-        ];
-
-        setFilterOptions({
-          locations,
-          experienceLevels,
-          durations,
-        });
 
         setError(null);
       } catch (err) {
@@ -125,7 +145,7 @@ const ProjectsList = () => {
     };
 
     fetchJobs();
-  }, [currentPage, filters, searchQuery, jobsPerPage]);
+  }, [currentPage, filters, searchQuery, jobsPerPage, isRecommended]);
 
   // Tính toán số thứ tự của công việc
   const getJobNumber = (index) => {
@@ -340,129 +360,175 @@ const ProjectsList = () => {
           <div className="flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Tìm việc làm
-                </h1>
-                <p className="mt-1 text-sm text-gray-500">
-                  Tìm kiếm và ứng tuyển các công việc phù hợp với kỹ năng của
-                  bạn
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm công việc..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#14a800] focus:border-transparent"
-                />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                  <FaSearch className="h-5 w-5 text-gray-400" />
+                <div className="flex justify-between items-center mb-6">
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {isRecommended ? "Công việc đề xuất" : "Tìm việc làm"}
+                  </h1>
+                  {!isRecommended && (
+                    <button
+                      onClick={() => navigate("/freelancer/recommended-jobs")}
+                      className="flex items-center gap-2 bg-[#14a800] hover:bg-[#108a00] text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Đề xuất công việc bằng AI
+                    </button>
+                  )}
                 </div>
+                {!isRecommended && (
+                  <p className="mt-1 text-sm text-gray-500">
+                    Tìm kiếm và ứng tuyển các công việc phù hợp với kỹ năng của
+                    bạn
+                  </p>
+                )}
               </div>
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium flex items-center justify-center sm:justify-start space-x-2 hover:bg-gray-50"
-              >
-                <FaFilter className="h-4 w-4" />
-                <span>Bộ lọc</span>
-              </button>
             </div>
+            {!isRecommended && (
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm công việc..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#14a800] focus:border-transparent"
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <FaSearch className="h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium flex items-center justify-center sm:justify-start space-x-2 hover:bg-gray-50"
+                >
+                  <FaFilter className="h-4 w-4" />
+                  <span>Bộ lọc</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filters Sidebar */}
-          {showFilters && (
-            <div className="w-full lg:w-64">
-              <FilterSidebar
-                filters={filters}
-                filterOptions={filterOptions}
-                handleFilterChange={handleFilterChange}
-                clearFilters={clearFilters}
-              />
-            </div>
-          )}
-
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Stats Overview */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Tổng số công việc
-                  </h3>
-                </div>
-                <p className="text-3xl font-bold text-[#14a800]">
-                  {totalJobs.toLocaleString()}
-                </p>
+        {isRecommended ? (
+          <RecommendedJobs />
+        ) : (
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Filters Sidebar */}
+            {showFilters && (
+              <div className="w-full lg:w-64">
+                <FilterSidebar
+                  filters={filters}
+                  filterOptions={filterOptions}
+                  handleFilterChange={handleFilterChange}
+                  clearFilters={clearFilters}
+                />
               </div>
-            </div>
+            )}
 
-            {/* Jobs List */}
-            <div className="space-y-4">
-              {loading ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#14a800] mx-auto"></div>
-                  <p className="mt-4 text-gray-500">Đang tải công việc...</p>
-                </div>
-              ) : jobs.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">
-                    Không tìm thấy công việc phù hợp.
+            {/* Main Content */}
+            <div className="flex-1">
+              {/* Stats Overview */}
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Tổng số công việc
+                    </h3>
+                  </div>
+                  <p className="text-3xl font-bold text-[#14a800]">
+                    {totalJobs.toLocaleString()}
                   </p>
                 </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 gap-4">
-                    {jobs.map((job, index) => (
-                      <JobCard
-                        key={job._id}
-                        job={job}
-                        index={index}
-                        currentPage={currentPage}
-                        jobsPerPage={jobsPerPage}
-                        onViewDetails={handleJobClick}
-                      />
-                    ))}
-                  </div>
-                  {!loading && jobs.length > 0 && totalPages > 1 && (
-                    <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                      <div className="text-sm text-gray-500 text-center sm:text-left">
-                        Hiển thị {jobs.length} công việc
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => setCurrentPage((prev) => prev - 1)}
-                          disabled={currentPage === 1}
-                          className="p-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <FaChevronLeft className="h-4 w-4" />
-                        </button>
+              </div>
 
+              {/* Jobs List */}
+              <div className="space-y-4">
+                {loading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#14a800] mx-auto"></div>
+                    <p className="mt-4 text-gray-500">Đang tải công việc...</p>
+                  </div>
+                ) : jobs.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">
+                      Không tìm thấy công việc phù hợp.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 gap-4">
+                      {jobs.map((job, index) => (
+                        <JobCard
+                          key={job._id}
+                          job={job}
+                          index={index}
+                          currentPage={currentPage}
+                          jobsPerPage={jobsPerPage}
+                          onViewDetails={handleJobClick}
+                        />
+                      ))}
+                    </div>
+                    {!loading && jobs.length > 0 && totalPages > 1 && (
+                      <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="text-sm text-gray-500 text-center sm:text-left">
+                          Hiển thị {jobs.length} công việc
+                        </div>
                         <div className="flex items-center gap-1">
-                          {Array.from({ length: totalPages }, (_, i) => i + 1)
-                            .filter(
-                              (page) =>
-                                page === 1 ||
-                                page === totalPages ||
-                                (page >= currentPage - 1 &&
-                                  page <= currentPage + 1)
-                            )
-                            .map((page, index, array) => {
-                              if (index > 0 && array[index - 1] !== page - 1) {
-                                return [
-                                  <span
-                                    key={`ellipsis-${page}`}
-                                    className="px-2 text-gray-500"
-                                  >
-                                    ...
-                                  </span>,
+                          <button
+                            onClick={() => setCurrentPage((prev) => prev - 1)}
+                            disabled={currentPage === 1}
+                            className="p-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <FaChevronLeft className="h-4 w-4" />
+                          </button>
+
+                          <div className="flex items-center gap-1">
+                            {Array.from({ length: totalPages }, (_, i) => i + 1)
+                              .filter(
+                                (page) =>
+                                  page === 1 ||
+                                  page === totalPages ||
+                                  (page >= currentPage - 1 &&
+                                    page <= currentPage + 1)
+                              )
+                              .map((page, index, array) => {
+                                if (
+                                  index > 0 &&
+                                  array[index - 1] !== page - 1
+                                ) {
+                                  return [
+                                    <span
+                                      key={`ellipsis-${page}`}
+                                      className="px-2 text-gray-500"
+                                    >
+                                      ...
+                                    </span>,
+                                    <button
+                                      key={page}
+                                      onClick={() => setCurrentPage(page)}
+                                      className={`px-3 py-1.5 rounded border ${
+                                        currentPage === page
+                                          ? "border-[#14a800] bg-[#14a800] text-white"
+                                          : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                                      }`}
+                                    >
+                                      {page}
+                                    </button>,
+                                  ];
+                                }
+                                return (
                                   <button
                                     key={page}
                                     onClick={() => setCurrentPage(page)}
@@ -473,40 +539,27 @@ const ProjectsList = () => {
                                     }`}
                                   >
                                     {page}
-                                  </button>,
-                                ];
-                              }
-                              return (
-                                <button
-                                  key={page}
-                                  onClick={() => setCurrentPage(page)}
-                                  className={`px-3 py-1.5 rounded border ${
-                                    currentPage === page
-                                      ? "border-[#14a800] bg-[#14a800] text-white"
-                                      : "border-gray-300 text-gray-600 hover:bg-gray-50"
-                                  }`}
-                                >
-                                  {page}
-                                </button>
-                              );
-                            })}
-                        </div>
+                                  </button>
+                                );
+                              })}
+                          </div>
 
-                        <button
-                          onClick={() => setCurrentPage((prev) => prev + 1)}
-                          disabled={currentPage === totalPages}
-                          className="p-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <FaChevronRight className="h-4 w-4" />
-                        </button>
+                          <button
+                            onClick={() => setCurrentPage((prev) => prev + 1)}
+                            disabled={currentPage === totalPages}
+                            className="p-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <FaChevronRight className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </>
-              )}
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {selectedJob && (

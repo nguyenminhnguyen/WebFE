@@ -25,6 +25,7 @@ import FreelancerInfo from "../pages/info/FreelancerInfo";
 import JobDetail from "../pages/afterLogin_employer/JobDetail";
 import GoogleCallback from "../services/auth/login/GoogleCallback";
 import JobsManage from "../pages/afterLogin_freelancer/JobsManage";
+import RecommendedJobsPage from "../pages/afterLogin_freelancer/RecommendedJobsPage";
 
 export default function AnimatedRoutes() {
   const location = useLocation();
@@ -163,7 +164,7 @@ export default function AnimatedRoutes() {
             </AnimatedPage>
           }
         />
-<Route
+        <Route
           path="/employer/profile"
           element={
             <ProtectedRoute>
@@ -197,6 +198,19 @@ export default function AnimatedRoutes() {
                 <NavBar />
                 <div className="mx-[10vw]">
                   <JobsManage />
+                </div>
+              </AnimatedPage>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/freelancer/recommended-jobs"
+          element={
+            <ProtectedRoute>
+              <AnimatedPage>
+                <NavBar />
+                <div className="mx-[10vw]">
+                  <RecommendedJobsPage />
                 </div>
               </AnimatedPage>
             </ProtectedRoute>
