@@ -15,7 +15,9 @@ const JobDetail = () => {
   const [activeTab, setActiveTab] = useState("view"); // Thêm state để quản lý tab
   const [proposals, setProposals] = useState([]);
   const [loadingProposals, setLoadingProposals] = useState(false);
-  const [selectedProposal, setSelectedProposal] = useState(null);
+  
+  // Changed state name for clarity and broader use
+  const [selectedItemForModal, setSelectedItemForModal] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -213,6 +215,21 @@ const JobDetail = () => {
     }
   };
 
+  const handleCloseModal = () => {
+      setShowModal(false);
+      setSelectedItemForModal(null);
+  };
+
+  // Placeholder for send message function (will be passed to modal)
+  const handleSendMessage = (freelancer) => {
+      if (freelancer) {
+          console.log('Sending message to:', freelancer.fname);
+          // TODO: Implement actual send message logic
+          alert(`Nhắn tin cho ${freelancer.fname || 'freelancer này'} (Chức năng đang được phát triển)`);
+          handleCloseModal();
+      }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       {/* Tab navigation */}
@@ -220,13 +237,23 @@ const JobDetail = () => {
 
       {/* Tab content */}
       {activeTab === "view" && <ViewJobContent job={job} id={id} />}
-      {activeTab === "invite" && <InviteFreelancerContent />}
+      
+      {/* Pass state setters to InviteFreelancerContent */}
+      {activeTab === "invite" && (
+         <InviteFreelancerContent 
+           jobId={id} 
+           setSelectedFreelancer={setSelectedItemForModal}
+           setShowModal={setShowModal}
+           jobData={job}
+         />
+      )}
+
       {activeTab === "proposals" && (
         <ViewProposalsContent 
           proposals={proposals}
           loadingProposals={loadingProposals}
-          setSelectedProposal={setSelectedProposal}
-          setShowModal={setShowModal}
+          setSelectedProposal={setSelectedItemForModal} // Use the generic setter
+          setShowModal={setShowModal} // Use the generic setter
           handleProposalAction={handleProposalAction}
           jobId={id}
           job={job}
@@ -234,27 +261,21 @@ const JobDetail = () => {
       )}
       {activeTab === "hired" && (
         <HiredFreelancersContent 
-          proposals={proposals}
-          setSelectedProposal={setSelectedProposal}
-          setShowModal={setShowModal}
+          proposals={proposals} // Assuming hired freelancers are also in the proposals data with a specific status
+          setSelectedProposal={setSelectedItemForModal} // Use the generic setter
+          setShowModal={setShowModal} // Use the generic setter
           job={job}
         />
       )}
 
-      {/* Modal chi tiết freelancer */}
-      {showModal && selectedProposal && (
+      {/* Modal chi tiết freelancer/proposal */}
+      {showModal && selectedItemForModal && (
         <FreelancerDetailModal 
-          selectedProposal={selectedProposal}
+          item={selectedItemForModal}
           setShowModal={setShowModal}
           handleProposalAction={handleProposalAction}
-        />
-      )}
-
-      {/* Overlay khi modal hiển thị */}
-      {showModal && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setShowModal(false)}
+          handleSendMessage={handleSendMessage}
+          jobId={id}
         />
       )}
     </div>

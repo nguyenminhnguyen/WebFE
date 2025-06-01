@@ -3,6 +3,8 @@ import { BrowserRouter } from "react-router-dom";
 import AnimatedRoutes from "./routes/AnimatedRoutes";
 import "./styles/App.css";
 import ChatBox from "./components/ChatBox";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [showChat, setShowChat] = useState(false);
@@ -20,6 +22,7 @@ function App() {
         Chat
       </button>
       {showChat && <ChatBox onClose={() => setShowChat(false)} />}
+      <ToastContainer />
     </>
   );
 }

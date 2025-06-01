@@ -16,7 +16,7 @@ const JobStep = ({ currentStep, formData, handleInputChange, setFormData }) => {
     <AnimatedPage>
       <div className="absolute w-full h-[90%] flex">
         {currentStep === 1 && (
-          <JobStep1 formData={formData} handleInputChange={handleInputChange} />
+          <JobStep1 formData={formData} setFormData={setFormData} />
         )}
 
         {currentStep === 2 && (
