@@ -26,8 +26,9 @@ import JobDetail from "../pages/afterLogin_employer/JobDetail";
 import GoogleCallback from "../services/auth/login/GoogleCallback";
 import JobsManage from "../pages/afterLogin_freelancer/JobsManage";
 import RecommendedJobsPage from "../pages/afterLogin_freelancer/RecommendedJobsPage";
+import Messages from "../pages/afterLogin_employer/Messages";
 
-export default function AnimatedRoutes() {
+const AnimatedRoutes = ({ users, unreadSenders }) => {
   const location = useLocation();
 
   return (
@@ -252,7 +253,36 @@ export default function AnimatedRoutes() {
             </AnimatedPage>
           }
         />
+        <Route
+          path="/employer/messages"
+          element={
+            <ProtectedRoute>
+              <AnimatedPage>
+                <NavBarWrapper />
+                <div className="mx-[10vw]">
+                  <Messages users={users} unreadSenders={unreadSenders} />
+                </div>
+              </AnimatedPage>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/freelancer/messages"
+          element={
+            <ProtectedRoute>
+              <AnimatedPage>
+                <NavBarWrapper />
+                <div className="mx-[10vw]">
+                  <Messages  users={users} unreadSenders={unreadSenders}/>
+                </div>
+              </AnimatedPage>
+            </ProtectedRoute>
+          }
+        />
+        
       </Routes>
     </AnimatePresence>
   );
-}
+};
+
+export default AnimatedRoutes;

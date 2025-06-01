@@ -163,13 +163,13 @@ export default function NavBar({
                 <FaBell className="w-5 h-5" />
                 <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-              <button
+              {/* <button
                 onClick={() => setShowMessages(!showMessages)}
                 className="p-2 text-gray-600 hover:text-green-600 relative"
               >
                 <FaEnvelope className="w-5 h-5" />
                 <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
+              </button> */}
 
               {/* Profile Dropdown */}
               <div className="relative">

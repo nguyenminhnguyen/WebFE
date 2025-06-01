@@ -13,13 +13,17 @@ function decryptMessage(encryptedText, privateKey) {
   return decrypted || "[Không giải mã được]";
 }
 
-const ChatBox = ({ onClose, receiver }) => {
-  const [users, setUsers] = useState([]);
+const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => {
   const [chatId, setChatId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
   const [showVideoCall, setShowVideoCall] = useState(false);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -59,38 +63,15 @@ const ChatBox = ({ onClose, receiver }) => {
     hasSetFromReceiver.current = true; // Để tránh tự động set lại chatId từ receiver
   };
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Bạn chưa đăng nhập hoặc token đã hết hạn!");
-        return;
-      }
-      try {
-        const res = await fetch("http://localhost:3000/api/message/users", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
-        console.log("API response:", data);
-        setUsers(data);
-        console.log("Danh sách users:", data);
-      } catch (err) {
-        setUsers([]);
-      }
-    };
-    fetchUsers();
-  }, []);
-
   const handleSelectUser = async (userId) => {
     setChatId(userId);
     setLoading(true);
+    setPage(1); // Reset page khi chọn user mới
+    setHasMore(true);
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:3000/api/message/getmessages/${userId}`,
+        `http://localhost:3000/api/message/getmessages/${userId}?page=1&limit=10`,
         {
           method: "GET",
           headers: {
@@ -99,12 +80,54 @@ const ChatBox = ({ onClose, receiver }) => {
         }
       );
       const data = await res.json();
-      // Giả sử backend trả về mảng messages
-      setMessages(data);
+      setMessages(data.messages);
+      setHasMore(data.hasMore);
+      console.log("hasmore:", data.hasMore);
+      console.log("messages select user:", data.messages);
+      console.log("total messages:", data.totalMessages);
+      onReadMessage(userId);
     } catch (err) {
       setMessages([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMoreMessages = async () => {
+    if (!hasMore || loadingMore) return;
+    
+    setLoadingMore(true);
+    try {
+      const token = localStorage.getItem("token");
+      const nextPage = page + 1;
+      const res = await fetch(
+        `http://localhost:3000/api/message/getmessages/${chatId}?page=${nextPage}&limit=10`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await res.json();
+      setMessages(prev => [...data.messages, ...prev]);
+      setHasMore(data.hasMore);
+      console.log("hasmore load more:", data.hasMore);
+      console.log("messages load more:", data.messages);
+      setPage(nextPage);
+    } catch (err) {
+      console.error("Error loading more messages:", err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const handleScroll = () => {
+    if (!chatContainerRef.current) return;
+    
+    const { scrollTop } = chatContainerRef.current;
+    if (scrollTop === 0 && hasMore && !loadingMore) {
+      loadMoreMessages();
     }
   };
 
@@ -166,7 +189,7 @@ const ChatBox = ({ onClose, receiver }) => {
 
         // Lấy publicKey của chính mình
         const myPublicKey = user?.publicKey;
-        console.log("My public key:", myPublicKey);
+      
         if (!myPublicKey) {
           alert("Không tìm thấy public key của bạn!");
           setLoading(false);
@@ -192,18 +215,26 @@ const ChatBox = ({ onClose, receiver }) => {
 
         if (file) formData.append("file", file);
 
-        console.log("Sending message with data:", {
-          textForReceiver: encryptedTextForReceiver,
-          textForSender: encryptedTextForSender,
-        });
-
-        await fetch(`http://localhost:3000/api/message/send/${chatId}`, {
+        const response = await fetch(`http://localhost:3000/api/message/send/${chatId}`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
-          },
+          },  
           body: formData,
         });
+
+        const data = await response.json();
+
+        // Thêm tin nhắn mới vào state messages
+        setMessages(prev => [...prev, {
+          senderID: myId,
+          receiverID: chatId,
+          textForSender: encryptedTextForSender,
+          textForReceiver: encryptedTextForReceiver,
+          file: file ? URL.createObjectURL(file) : null,
+          createdAt: new Date().toISOString()
+        }]);
+
         setInput("");
         setFile(null);
       } catch (err) {
@@ -226,16 +257,13 @@ const ChatBox = ({ onClose, receiver }) => {
     if (!socket) return;
 
     const handleNewMessage = (msg) => {
-      // Chỉ cập nhật nếu đúng đoạn chat đang mở
+      // Chỉ cập nhật nếu đúng đoạn chat đang mở và không phải tin nhắn do mình gửi
       if (
-        (msg.senderID === myId && msg.receiverID === chatId) ||
-        (msg.senderID === chatId && msg.receiverID === myId)
+        (msg.senderID === chatId && msg.receiverID === myId) // Tin nhắn từ người khác gửi đến mình
       ) {
         setMessages(prev => {
-          // Nếu đã có tin nhắn này (so sánh bằng _id hoặc nội dung), không thêm nữa
+          // Kiểm tra trùng lặp
           if (prev.some(m => m._id === msg._id && msg._id)) return prev;
-          // Nếu không có _id, so sánh bằng text và file (chống trùng tạm thời)
-          if (!msg._id && prev.some(m => m.textForSender === msg.textForSender && m.textForReceiver === msg.textForReceiver && m.file === msg.file)) return prev;
           return [...prev, msg];
         });
       }
@@ -249,7 +277,7 @@ const ChatBox = ({ onClose, receiver }) => {
   }, [chatId, myId, socket]);
 
   const decryptedMessages = useMemo(() => {
-    return messages.map((msg) => {
+    const decrypted = messages.map((msg) => {
       // Nếu là AI thì không giải mã, dùng decryptedText luôn
       if (msg.senderID === "chatbot") {
         return { ...msg, decryptedText: msg.decryptedText || msg.text || msg.answer || msg.textForSender || msg.textForReceiver };
@@ -267,6 +295,9 @@ const ChatBox = ({ onClose, receiver }) => {
             : decryptMessage(msg.textForReceiver, decryptedPrivateKey),
       };
     });
+    
+    
+    return decrypted;
   }, [messages, decryptedPrivateKey, myId, chatId]);
 
 
@@ -381,8 +412,8 @@ const ChatBox = ({ onClose, receiver }) => {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          {/* Chỉ hiện nút gọi video khi đã chọn người chat */}
-          {chatId && (
+          {/* Chỉ hiện nút gọi video khi đã chọn người chat và không phải AI */}
+          {chatId && chatId !== "chatbot" && (
             <button
               onClick={handleStartVideoCall}
               className="text-gray-500 hover:text-blue-600 text-xl"
@@ -410,7 +441,7 @@ const ChatBox = ({ onClose, receiver }) => {
               className="cursor-pointer hover:bg-blue-100 rounded px-2 py-1 flex justify-between items-center font-semibold text-blue-700"
               onClick={() => {
                 setChatId("chatbot");
-                setMessages([]); // Reset tin nhắn khi chuyển sang chat AI
+                setMessages([]);
               }}
             >
               🤖 Chat với AI
@@ -419,7 +450,9 @@ const ChatBox = ({ onClose, receiver }) => {
             {users.map((user) => (
               <li
                 key={user._id}
-                className="cursor-pointer hover:bg-green-100 rounded px-2 py-1 flex justify-between items-center"
+                className={`cursor-pointer hover:bg-green-100 rounded px-2 py-1 flex justify-between items-center ${
+                  unreadSenders.has(user._id) ? 'border-2 border-red-500' : ''
+                }`}
                 onClick={() => handleSelectUser(user._id)}
               >
                 <span>
@@ -431,6 +464,11 @@ const ChatBox = ({ onClose, receiver }) => {
                     user._id ||
                     "Không tên"}
                 </span>
+                {unreadSenders.has(user._id) && (
+                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                    Mới
+                  </span>
+                )}
               </li>
             ))}
           </ul>
@@ -438,9 +476,12 @@ const ChatBox = ({ onClose, receiver }) => {
       ) : (
         <>
           <div
+            ref={chatContainerRef}
             className="flex-1 p-3 overflow-y-auto"
             style={{ maxHeight: 300 }}
+            onScroll={handleScroll}
           >
+           
             {decryptedMessages.map((msg, idx) => {
               // Đoán loại file dựa vào đuôi file
               const isImage = msg.file &&
@@ -502,6 +543,7 @@ const ChatBox = ({ onClose, receiver }) => {
                 </div>
               );
             })}
+            <div ref={messagesEndRef} />
           </div>
           {/* Hiển thị ảnh preview nếu đã chọn, nằm trên khung nhập */}
           {/* Hiển thị file preview nếu đã chọn, nằm trên khung nhập */}
