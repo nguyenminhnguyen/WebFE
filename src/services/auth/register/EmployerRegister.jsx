@@ -41,7 +41,7 @@ export default function ClientRegister({ onBack }) {
     }
     try {
       const response = await fetch(
-        'http://localhost:3000/api/employer/register',
+        'https://findwork-backend.onrender.com/api/employer/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

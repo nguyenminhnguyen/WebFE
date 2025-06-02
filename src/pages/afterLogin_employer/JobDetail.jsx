@@ -21,7 +21,7 @@ const JobDetail = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log(id);
-    fetch(`http://localhost:3000/api/jobs/${id}`, {
+    fetch(`https://findwork-backend.onrender.com/api/jobs/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +54,7 @@ const JobDetail = () => {
         try {
           const token = localStorage.getItem("token");
           const response = await fetch(
-            `http://localhost:3000/api/jobs/${id}/proposal`,
+            `https://findwork-backend.onrender.com/api/jobs/${id}/proposal`,
             {
               method: "GET",
               headers: {
@@ -92,7 +92,7 @@ const JobDetail = () => {
   useEffect(() => {
     if (activeTab === "proposals") {
       const token = localStorage.getItem("token");
-      fetch(`http://localhost:3000/api/jobs/${id}`, {
+      fetch(`https://findwork-backend.onrender.com/api/jobs/${id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -155,7 +155,7 @@ const JobDetail = () => {
         // Gọi API reject proposal
         console.log("Calling reject API for proposal:", proposalId);
         const response = await fetch(
-          `http://localhost:3000/api/jobs/proposals/${proposalId}/reject`,
+          `https://findwork-backend.onrender.com/api/jobs/proposals/${proposalId}/reject`,
           {
             method: "PUT",
             headers: {
@@ -182,7 +182,7 @@ const JobDetail = () => {
         // Xử lý chấp nhận proposal
         console.log("Calling accept API for proposal:", proposalId);
         const response = await fetch(
-          `http://localhost:3000/api/jobs/proposals/${proposalId}/accept`,
+          `https://findwork-backend.onrender.com/api/jobs/proposals/${proposalId}/accept`,
           {
             method: "PUT",
             headers: {

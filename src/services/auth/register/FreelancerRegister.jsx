@@ -142,7 +142,7 @@ export default function FreelancerRegister({ onBack }) {
       }
 
       const response = await fetch(
-        "http://localhost:3000/api/freelancer/register",
+        "https://findwork-backend.onrender.com/api/freelancer/register",
         {
           method: "POST",
           body: formDataToSend,

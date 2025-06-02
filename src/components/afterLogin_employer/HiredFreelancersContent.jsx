@@ -20,7 +20,7 @@ const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal,
                 <div className="w-20 h-20 rounded-full bg-white border-2 border-[#14a800] shadow-sm overflow-hidden">
                   {proposal.freelancer.avatar ? (
                     <img
-                      src={`http://localhost:3000/${proposal.freelancer.avatar.replace(
+                      src={`https://findwork-backend.onrender.com/${proposal.freelancer.avatar.replace(
                         /\\/g,
                         "/"
                       )}`}

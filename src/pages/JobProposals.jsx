@@ -18,7 +18,7 @@ const JobProposals = () => {
   const fetchProposals = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:3000/api/jobs/${jobId}/proposal`);
+      const response = await axios.get(`https://findwork-backend.onrender.com/api/jobs/${jobId}/proposal`);
       setProposals(response.data.data.applications);
     } catch (err) {
       setError(err.response?.data?.message || 'Có lỗi xảy ra khi tải danh sách ứng viên');

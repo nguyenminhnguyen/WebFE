@@ -67,7 +67,7 @@ const ChatBox = ({ onClose, receiver }) => {
         return;
       }
       try {
-        const res = await fetch("http://localhost:3000/api/message/users", {
+        const res = await fetch("https://findwork-backend.onrender.com/api/message/users", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -90,7 +90,7 @@ const ChatBox = ({ onClose, receiver }) => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:3000/api/message/getmessages/${userId}`,
+        `https://findwork-backend.onrender.com/api/message/getmessages/${userId}`,
         {
           method: "GET",
           headers: {
@@ -117,7 +117,7 @@ const ChatBox = ({ onClose, receiver }) => {
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(
-          `http://localhost:3000/api/message/chatbot?question=${encodeURIComponent(input)}`,
+          `https://findwork-backend.onrender.com/api/message/chatbot?question=${encodeURIComponent(input)}`,
           {
             method: "GET",
             headers: {
@@ -197,7 +197,7 @@ const ChatBox = ({ onClose, receiver }) => {
           textForSender: encryptedTextForSender,
         });
 
-        await fetch(`http://localhost:3000/api/message/send/${chatId}`, {
+        await fetch(`https://findwork-backend.onrender.com/api/message/send/${chatId}`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
