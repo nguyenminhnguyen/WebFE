@@ -215,7 +215,7 @@ const Profile = () => {
                   <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-white border-4 border-[#14a800] shadow-sm overflow-hidden transform group-hover:scale-105 transition-all duration-300">
                     {profile.avatar ? (
                       <img
-                        src={`http://localhost:3000/${profile.avatar.replace(
+                        src={`https://findwork-backend.onrender.com/${profile.avatar.replace(
                           /\\/g,
                           "/"
                         )}`}

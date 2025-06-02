@@ -462,7 +462,7 @@ const ChatBox = ({ onClose, receiver }) => {
                         src={
                           msg.file.startsWith("http")
                             ? msg.file
-                            : `http://localhost:3000${
+                            : `https://findwork-backend.onrender.com${
                                 msg.file.startsWith("/") ? "" : "/"
                               }${msg.file}`
                         }
@@ -474,7 +474,7 @@ const ChatBox = ({ onClose, receiver }) => {
                         href={
                           msg.file.startsWith("http")
                             ? msg.file
-                            : `http://localhost:3000${
+                            : `https://findwork-backend.onrender.com${
                                 msg.file.startsWith("/") ? "" : "/"
                               }${msg.file}`
                         }
