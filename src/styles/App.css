@@ -47,4 +47,24 @@
     animation: dropdown 0.2s ease-out forwards;
   }
   
+.chat-button {
+  user-select: none;
+  touch-action: none;
+  cursor: move;
+}
+
+.chat-button button {
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.chat-button button:active {
+  transform: scale(0.95);
+}
+
+/* Thêm hiệu ứng khi đang kéo */
+.chat-button:active {
+  opacity: 0.8;
+}
+  
   

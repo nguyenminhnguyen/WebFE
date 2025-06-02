@@ -11,6 +11,7 @@ function JobPostForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
+    category: undefined,
     skills: [],
     timeEstimation: "",
     experienceLevel: "",
@@ -24,6 +25,7 @@ function JobPostForm() {
   const isStepCompleted = () => {
     const {
       title,
+      category,
       skills,
       timeEstimation,
       experienceLevel,
@@ -34,7 +36,7 @@ function JobPostForm() {
     } = formData;
     switch (currentStep) {
       case 1:
-        return title !== "";
+        return title !== "" && category !== undefined;
       case 2:
         return skills.length > 0;
       case 3:
@@ -83,7 +85,8 @@ function JobPostForm() {
       timeEstimation: formData.timeEstimation,
       experienceLevel: formData.experienceLevel,
       location: formData.location?.label,
-      skills: formData.skills
+      skills: formData.skills,
+      category: formData.categoryName
     };
 
     const token = localStorage.getItem("token");

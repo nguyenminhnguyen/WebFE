@@ -10,7 +10,9 @@ import {
   FaEdit,
   FaSave,
   FaTimes,
+  FaCamera
 } from "react-icons/fa";
+import { toast } from 'react-toastify';
 
 const Profile = () => {
   const [profile, setProfile] = useState({
@@ -24,12 +26,16 @@ const Profile = () => {
     rating: 0,
     completedProjects: 0,
     bio: "",
-    avatar: "",
+    avatarUrl: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
+  
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarError, setAvatarError] = useState("");
 
   useEffect(() => {
     const loadProfile = () => {
@@ -47,12 +53,16 @@ const Profile = () => {
             rating: userData.rating || 0,
             completedProjects: userData.completedProjects || 0,
             bio: userData.bio || "",
-            avatar: userData.avatar || "",
+            avatarUrl: userData.avatar || "",
           });
+          if (userData.avatar) {
+            setAvatarPreview(`https://findwork-backend.onrender.com/${userData.avatar.replace(/\\/g, "/")}`);
+          }
         }
       } catch (err) {
         console.error("Error loading profile:", err);
         setError("Không thể tải thông tin hồ sơ");
+        toast.error("Không thể tải thông tin hồ sơ");
       }
     };
 
@@ -70,27 +80,60 @@ const Profile = () => {
   const handleSkillChange = (index, value) => {
     const newSkills = [...profile.skills];
     newSkills[index] = value;
-    setProfile((prev) => ({
-      ...prev,
-      skills: newSkills,
-    }));
+    setProfile((prev) => ({ ...prev, skills: newSkills }));
   };
 
-  const addSkill = () => {
-    if (newSkill.trim()) {
-      setProfile((prev) => ({
-        ...prev,
-        skills: [...prev.skills, newSkill.trim()],
-      }));
+  const handleAddSkill = () => {
+    if (newSkill.trim() && !profile.skills.includes(newSkill.trim())) {
+      setProfile((prev) => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
       setNewSkill("");
     }
   };
 
-  const removeSkill = (index) => {
+  const handleRemoveSkill = (skillToRemove) => {
     setProfile((prev) => ({
       ...prev,
-      skills: prev.skills.filter((_, i) => i !== index),
+      skills: prev.skills.filter((skill) => skill !== skillToRemove),
     }));
+  };
+
+  const handleAvatarFileChange = (e) => {
+    const file = e.target.files[0];
+    setAvatarError("");
+
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setAvatarError("Kích thước ảnh không được vượt quá 5MB");
+        setSelectedAvatarFile(null);
+        setAvatarPreview(null);
+        return;
+      }
+
+      const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+      if (!validTypes.includes(file.type.toLowerCase())) {
+        setAvatarError("Chỉ chấp nhận file ảnh định dạng JPG, JPEG hoặc PNG");
+        setSelectedAvatarFile(null);
+        setAvatarPreview(null);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+
+      setSelectedAvatarFile(file);
+    } else {
+      setSelectedAvatarFile(null);
+      setAvatarPreview(profile.avatarUrl ? `http://https://findwork-backend.onrender.com:3000/${profile.avatarUrl.replace(/\\/g, "/")}` : null);
+    }
+  };
+
+  const handleRemoveSelectedAvatar = () => {
+    setSelectedAvatarFile(null);
+    setAvatarPreview(profile.avatarUrl ? `http://https://findwork-backend.onrender.com:3000/${profile.avatarUrl.replace(/\\/g, "/")}` : null);
+    setAvatarError("");
   };
 
   const handleEducationChange = (index, field, value) => {
@@ -128,59 +171,95 @@ const Profile = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSave = async () => {
     setLoading(true);
+    setError(null);
+
     try {
-      const token = localStorage.getItem("token");
+      const formDataToSend = new FormData();
+
+      Object.keys(profile).forEach(key => {
+        if (key !== 'avatarUrl' && key !== 'skills' && key !== 'education' && key !== 'rating' && key !== 'completedProjects') {
+          if (profile[key] !== null && profile[key] !== undefined) {
+            if (key === 'location' && typeof profile[key] === 'object' && profile[key] !== null) {
+              formDataToSend.append(key, profile[key].label);
+            } else {
+              formDataToSend.append(key, profile[key]);
+            }
+          }
+        }
+      });
+
+      (profile.skills || []).forEach((skill, index) => {
+        formDataToSend.append(`skills[${index}]`, skill || '');
+      });
+
+      (profile.education || []).forEach((edu, index) => {
+        formDataToSend.append(`education[${index}][school]`, edu.school || '');
+        formDataToSend.append(`education[${index}][degree]`, edu.degree || '');
+        formDataToSend.append(`education[${index}][startDate]`, edu.startDate || '');
+        formDataToSend.append(`education[${index}][endDate]`, edu.endDate || '');
+        formDataToSend.append(`education[${index}][description]`, edu.description || '');
+      });
+
+      if (selectedAvatarFile) {
+        formDataToSend.append('avatar', selectedAvatarFile);
+      }
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Không tìm thấy token xác thực.');
+      }
+
       const response = await fetch(
         "https://findwork-backend.onrender.com/api/freelancer/profile",
         {
-          method: "PUT",
+          method: 'PUT',
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`,
           },
-          body: JSON.stringify(profile),
+          body: formDataToSend,
         }
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Cập nhật thất bại");
+        throw new Error(data.message || data.error || 'Cập nhật hồ sơ thất bại!');
       }
 
-      const data = await response.json();
-      console.log("Server response data:", data);
+      if (data.profile) {
+        const updatedProfileData = data.profile;
+        setProfile(prev => ({ 
+          ...prev, 
+          ...updatedProfileData,
+          avatarUrl: updatedProfileData.avatar || prev.avatarUrl
+        }));
 
-      // Cập nhật localStorage với dữ liệu mới
-      const userData = JSON.parse(localStorage.getItem("user"));
-      const updatedUserData = {
-        ...userData,
-        bio: data.data.bio,
-        skills: data.data.skills,
-        experience: data.data.experience,
-        education: data.data.education,
-      };
-      localStorage.setItem("user", JSON.stringify(updatedUserData));
-      console.log(
-        "Updated localStorage:",
-        JSON.parse(localStorage.getItem("user"))
-      );
+        if (updatedProfileData.avatar && updatedProfileData.avatar !== profile.avatarUrl) {
+          setAvatarPreview(`http://https://findwork-backend.onrender.com:3000/${updatedProfileData.avatar.replace(/\\/g, "/")}`);
+        }
+        setSelectedAvatarFile(null);
 
-      // Cập nhật state profile với dữ liệu mới
-      setProfile((prev) => ({
-        ...prev,
-        bio: data.data.bio,
-        skills: data.data.skills,
-        experience: data.data.experience,
-        education: data.data.education,
-      }));
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if(userData) {
+          const updatedUserData = { ...userData, ...updatedProfileData, avatar: updatedProfileData.avatar || userData.avatar };
+          localStorage.setItem("user", JSON.stringify(updatedUserData));
+        }
+
+      } else if (data.avatarUrl) {
+        setProfile(prev => ({ ...prev, avatarUrl: data.avatarUrl }));
+        setAvatarPreview(`https://findwork-backend.onrender.com/${data.avatarUrl.replace(/\\/g, "/")}`);
+        setSelectedAvatarFile(null);
+      }
 
       setIsEditing(false);
-      alert("Cập nhật thành công!");
+      toast.success('Cập nhật hồ sơ thành công!');
+
     } catch (err) {
-      console.error(err);
-      setError(err.message);
+      console.error("Error saving profile:", err);
+      setError(err.message || 'Đã xảy ra lỗi khi cập nhật hồ sơ.');
+      toast.error(err.message || 'Đã xảy ra lỗi khi cập nhật hồ sơ.');
     } finally {
       setLoading(false);
     }
@@ -204,42 +283,49 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Profile Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6 sm:py-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-              {/* Avatar and Basic Info */}
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 w-full sm:w-auto">
                 <div className="relative group">
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-white border-4 border-[#14a800] shadow-sm overflow-hidden transform group-hover:scale-105 transition-all duration-300">
-                    {profile.avatar ? (
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-white border-4 border-[#14a800] shadow-sm overflow-hidden transform group-hover:scale-105 transition-all duration-300 flex items-center justify-center">
+                    {avatarPreview ? (
                       <img
-                        src={`https://findwork-backend.onrender.com/${profile.avatar.replace(
-                          /\\/g,
-                          "/"
-                        )}`}
-                        alt="Profile"
+                        src={avatarPreview}
+                        alt="Profile Preview"
+
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                          e.target.parentElement.querySelector(
-                            ".fallback-icon"
-                          ).style.display = "block";
-                        }}
                       />
-                    ) : null}
-                    <FaUser
-                      className="w-full h-full text-gray-300 fallback-icon"
-                      style={{ display: profile.avatar ? "none" : "block" }}
-                    />
+                    ) : (
+                      <FaUser className="w-full h-full text-gray-300" />
+                    )}
+                    {isEditing && (
+                      <label htmlFor="avatarUpload" className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+                        <FaCamera className="w-6 h-6 text-white" />
+                        <input
+                          id="avatarUpload"
+                          type="file"
+                          className="hidden"
+                          accept="image/png, image/jpeg, image/jpg"
+                          onChange={handleAvatarFileChange}
+                        />
+                      </label>
+                    )}
                   </div>
-                  {isEditing && (
-                    <button className="absolute bottom-0 right-0 bg-[#14a800] text-white p-2 rounded-full hover:bg-[#108a00] transition-colors shadow-sm">
-                      <FaEdit className="w-4 h-4" />
+                  {isEditing && selectedAvatarFile && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveSelectedAvatar}
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition"
+                    >
+                      <FaTimes className="w-4 h-4" />
                     </button>
                   )}
                 </div>
+                {isEditing && avatarError && (
+                  <p className="text-red-500 text-sm mt-2">{avatarError}</p>
+                )}
                 <div className="flex-1 text-center sm:text-left">
                   <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
                     {profile.name}
@@ -261,25 +347,15 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* Edit/Save Button */}
               <div className="flex gap-2 w-full sm:w-auto">
                 {isEditing ? (
-                  <>
-                    <button
-                      onClick={handleSubmit}
-                      className="flex-1 sm:flex-none bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors flex items-center justify-center gap-2"
-                    >
-                      <FaSave />
-                      Lưu thay đổi
-                    </button>
-                    <button
-                      onClick={() => setIsEditing(false)}
-                      className="flex-1 sm:flex-none bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
-                    >
-                      <FaTimes />
-                      Hủy
-                    </button>
-                  </>
+                  <button
+                    onClick={handleSave}
+                    disabled={loading}
+                    className="flex-1 sm:flex-none bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors flex items-center justify-center gap-2"
+                  >
+                    {loading ? 'Đang lưu...' : <><FaSave /> Lưu</>}
+                  </button>
                 ) : (
                   <button
                     onClick={() => setIsEditing(true)}
@@ -295,12 +371,9 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column */}
           <div className="lg:col-span-2 space-y-8">
-            {/* About */}
             <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Giới thiệu
@@ -320,7 +393,6 @@ const Profile = () => {
               )}
             </div>
 
-            {/* Skills */}
             <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Kỹ năng
@@ -336,7 +408,7 @@ const Profile = () => {
                       placeholder="Thêm kỹ năng mới"
                     />
                     <button
-                      onClick={addSkill}
+                      onClick={handleAddSkill}
                       className="bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors"
                     >
                       Thêm
@@ -357,7 +429,7 @@ const Profile = () => {
                           className="bg-transparent border-none focus:outline-none"
                         />
                         <button
-                          onClick={() => removeSkill(index)}
+                          onClick={() => handleRemoveSkill(skill)}
                           className="text-red-500 hover:text-red-600"
                         >
                           <FaTimes />
@@ -380,7 +452,6 @@ const Profile = () => {
               )}
             </div>
 
-            {/* Experience */}
             <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Kinh nghiệm
@@ -402,7 +473,6 @@ const Profile = () => {
               )}
             </div>
 
-            {/* Education */}
             <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Học vấn
@@ -414,7 +484,7 @@ const Profile = () => {
                       <input
                         type="text"
                         name={`school-${index}`}
-                        value={edu.school}
+                        value={edu.school || ''}
                         onChange={(e) =>
                           handleEducationChange(index, "school", e.target.value)
                         }
@@ -424,7 +494,7 @@ const Profile = () => {
                       <input
                         type="text"
                         name={`degree-${index}`}
-                        value={edu.degree}
+                        value={edu.degree || ''}
                         onChange={(e) =>
                           handleEducationChange(index, "degree", e.target.value)
                         }
@@ -439,7 +509,7 @@ const Profile = () => {
                           <input
                             type="date"
                             name={`startDate-${index}`}
-                            value={edu.startDate}
+                            value={edu.startDate || ''}
                             onChange={(e) =>
                               handleEducationChange(
                                 index,
@@ -457,7 +527,7 @@ const Profile = () => {
                           <input
                             type="date"
                             name={`endDate-${index}`}
-                            value={edu.endDate}
+                            value={edu.endDate || ''}
                             onChange={(e) =>
                               handleEducationChange(
                                 index,
@@ -471,7 +541,7 @@ const Profile = () => {
                       </div>
                       <textarea
                         name={`description-${index}`}
-                        value={edu.description}
+                        value={edu.description || ''}
                         onChange={(e) =>
                           handleEducationChange(
                             index,
@@ -479,10 +549,11 @@ const Profile = () => {
                             e.target.value
                           )
                         }
-                        className="w-full p-2 border border-gray-300 rounded-lg focus:border-[#14a800] focus:outline-none"
+                        className="w-full h-24 p-2 border border-gray-300 rounded-lg focus:border-[#14a800] focus:outline-none"
                         placeholder="Mô tả"
                       />
                       <button
+                        type="button"
                         onClick={() => removeEducation(index)}
                         className="text-red-500 hover:text-red-600"
                       >
@@ -491,6 +562,7 @@ const Profile = () => {
                     </div>
                   ))}
                   <button
+                    type="button"
                     onClick={addEducation}
                     className="w-full sm:w-auto bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors"
                   >
@@ -506,28 +578,24 @@ const Profile = () => {
                         className="border-l-4 border-[#14a800] pl-4"
                       >
                         <h3 className="text-lg font-semibold text-gray-900">
-                          {edu.school}
+                          {edu.school || 'Chưa có thông tin trường'}
                         </h3>
-                        <p className="text-[#14a800]">{edu.degree}</p>
+                        <p className="text-[#14a800]">{edu.degree || 'Chưa có thông tin bằng cấp'}</p>
                         <p className="text-sm text-gray-500">
-                          {edu.startDate} - {edu.endDate || "Hiện tại"}
+                          {(edu.startDate || 'Không rõ')} - {(edu.endDate || 'Hiện tại')}
                         </p>
-                        <p className="mt-2 text-gray-600">{edu.description}</p>
+                        <p className="mt-2 text-gray-600">{edu.description || 'Chưa có mô tả'}</p>
                       </div>
                     ))
                   ) : (
-                    <p className="text-gray-500 text-center">
-                      Chưa có thông tin học vấn
-                    </p>
+                    <p className="text-gray-500 text-center">Chưa có thông tin học vấn</p>
                   )}
                 </div>
               )}
             </div>
           </div>
 
-          {/* Right Column */}
           <div className="space-y-8">
-            {/* Availability */}
             <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Tình trạng
@@ -538,7 +606,6 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Hourly Rate */}
             <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Mức lương
