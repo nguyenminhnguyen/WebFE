@@ -63,6 +63,33 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
     hasSetFromReceiver.current = true; // Để tránh tự động set lại chatId từ receiver
   };
 
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Bạn chưa đăng nhập hoặc token đã hết hạn!");
+        return;
+      }
+      try {
+        const res = await fetch("https://findwork-backend.onrender.com/api/message/users", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        console.log("API response:", data);
+        setUsers(data);
+        console.log("Danh sách users:", data);
+      } catch (err) {
+        setUsers([]);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+
   const handleSelectUser = async (userId) => {
     setChatId(userId);
     setLoading(true);
@@ -71,7 +98,9 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:3000/api/message/getmessages/${userId}?page=1&limit=10`,
+
+        `https://findwork-backend.onrender.com/api/message/getmessages/${userId}?page=1&limit=10`,
+
         {
           method: "GET",
           headers: {
@@ -101,7 +130,7 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
       const token = localStorage.getItem("token");
       const nextPage = page + 1;
       const res = await fetch(
-        `http://localhost:3000/api/message/getmessages/${chatId}?page=${nextPage}&limit=10`,
+        `https://findwork-backend.onrender.com/api/message/getmessages/${chatId}?page=${nextPage}&limit=10`,
         {
           method: "GET",
           headers: {
@@ -140,7 +169,7 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(
-          `http://localhost:3000/api/message/chatbot?question=${encodeURIComponent(input)}`,
+          `https://findwork-backend.onrender.com/api/message/chatbot?question=${encodeURIComponent(input)}`,
           {
             method: "GET",
             headers: {
@@ -215,7 +244,8 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
 
         if (file) formData.append("file", file);
 
-        const response = await fetch(`http://localhost:3000/api/message/send/${chatId}`, {
+        const response = await fetch(`https://findwork-backend.onrender.com/api/message/send/${chatId}`, {
+
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -504,7 +534,7 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
                         src={
                           msg.file.startsWith("http")
                             ? msg.file
-                            : `http://localhost:3000${
+                            : `https://findwork-backend.onrender.com${
                                 msg.file.startsWith("/") ? "" : "/"
                               }${msg.file}`
                         }
@@ -516,7 +546,7 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
                         href={
                           msg.file.startsWith("http")
                             ? msg.file
-                            : `http://localhost:3000${
+                            : `https://findwork-backend.onrender.com${
                                 msg.file.startsWith("/") ? "" : "/"
                               }${msg.file}`
                         }

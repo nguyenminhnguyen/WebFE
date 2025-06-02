@@ -29,8 +29,8 @@ export default function AuthLogin() {
       // 👇 Chọn endpoint API tùy theo vai trò
       const endpoint =
         role === "freelancer"
-          ? "http://localhost:3000/api/freelancer/login"
-          : "http://localhost:3000/api/employer/login";
+          ? "https://findwork-backend.onrender.com/api/freelancer/login"
+          : "https://findwork-backend.onrender.com/api/employer/login";
 
       const response = await axios.post(endpoint, formData, {
         headers: { "Content-Type": "application/json" },
@@ -106,16 +106,16 @@ export default function AuthLogin() {
       // Redirect to Google OAuth endpoint
       const endpoint =
         role === "freelancer"
-          ? `http://localhost:3000/auth/freelancer/google`
-          : `http://localhost:3000/auth/employer/google`;
+          ? `https://findwork-backend.onrender.com/auth/freelancer/google`
+          : `https://findwork-backend.onrender.com/auth/employer/google`;
       window.location.href = endpoint;
     } else if (provider === "facebook") {
       // Handle Facebook login if needed
       // Redirect to Google OAuth endpoint
       const endpoint =
         role === "freelancer"
-          ? `http://localhost:3000/auth/freelancer/facebook`
-          : `http://localhost:3000/auth/employer/facebook`;
+          ? `https://findwork-backend.onrender.com/auth/freelancer/facebook`
+          : `https://findwork-backend.onrender.com/auth/employer/facebook`;
       window.location.href = endpoint;
     }
   };

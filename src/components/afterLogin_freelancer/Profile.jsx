@@ -56,7 +56,7 @@ const Profile = () => {
             avatarUrl: userData.avatar || "",
           });
           if (userData.avatar) {
-            setAvatarPreview(`http://localhost:3000/${userData.avatar.replace(/\\/g, "/")}`);
+            setAvatarPreview(`https://findwork-backend.onrender.com/${userData.avatar.replace(/\\/g, "/")}`);
           }
         }
       } catch (err) {
@@ -126,13 +126,13 @@ const Profile = () => {
       setSelectedAvatarFile(file);
     } else {
       setSelectedAvatarFile(null);
-      setAvatarPreview(profile.avatarUrl ? `http://localhost:3000/${profile.avatarUrl.replace(/\\/g, "/")}` : null);
+      setAvatarPreview(profile.avatarUrl ? `http://https://findwork-backend.onrender.com:3000/${profile.avatarUrl.replace(/\\/g, "/")}` : null);
     }
   };
 
   const handleRemoveSelectedAvatar = () => {
     setSelectedAvatarFile(null);
-    setAvatarPreview(profile.avatarUrl ? `http://localhost:3000/${profile.avatarUrl.replace(/\\/g, "/")}` : null);
+    setAvatarPreview(profile.avatarUrl ? `http://https://findwork-backend.onrender.com:3000/${profile.avatarUrl.replace(/\\/g, "/")}` : null);
     setAvatarError("");
   };
 
@@ -212,7 +212,7 @@ const Profile = () => {
       }
 
       const response = await fetch(
-        `http://localhost:3000/api/freelancer/profile`,
+        "https://findwork-backend.onrender.com/api/freelancer/profile",
         {
           method: 'PUT',
           headers: {
@@ -237,7 +237,7 @@ const Profile = () => {
         }));
 
         if (updatedProfileData.avatar && updatedProfileData.avatar !== profile.avatarUrl) {
-          setAvatarPreview(`http://localhost:3000/${updatedProfileData.avatar.replace(/\\/g, "/")}`);
+          setAvatarPreview(`http://https://findwork-backend.onrender.com:3000/${updatedProfileData.avatar.replace(/\\/g, "/")}`);
         }
         setSelectedAvatarFile(null);
 
@@ -249,7 +249,7 @@ const Profile = () => {
 
       } else if (data.avatarUrl) {
         setProfile(prev => ({ ...prev, avatarUrl: data.avatarUrl }));
-        setAvatarPreview(`http://localhost:3000/${data.avatarUrl.replace(/\\/g, "/")}`);
+        setAvatarPreview(`https://findwork-backend.onrender.com/${data.avatarUrl.replace(/\\/g, "/")}`);
         setSelectedAvatarFile(null);
       }
 
@@ -294,6 +294,7 @@ const Profile = () => {
                       <img
                         src={avatarPreview}
                         alt="Profile Preview"
+
                         className="w-full h-full object-cover"
                       />
                     ) : (

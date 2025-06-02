@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://findwork-backend.onrender.com/api';
 
 // Get freelancers with search and pagination
 export const getFreelancers = async (search = '', page = 1, limit = 10) => {

@@ -21,7 +21,7 @@ export default function Employer() {
 
     const fetchJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/jobs/employerjob", {
+        const response = await axios.get("https://findwork-backend.onrender.com/api/jobs/employerjob", {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

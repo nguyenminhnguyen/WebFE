@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Tạo instance axios với cấu hình mặc định
 const api = axios.create({
-  baseURL: "http://localhost:3000/api", // URL của backend API
+  baseURL: "https://findwork-backend.onrender.com/api", // URL của backend API
   headers: {
     "Content-Type": "application/json",
   },

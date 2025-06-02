@@ -92,7 +92,7 @@ function JobPostForm() {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("http://localhost:3000/api/jobpost", {
+      const response = await fetch("https://findwork-backend.onrender.com/api/jobpost", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
