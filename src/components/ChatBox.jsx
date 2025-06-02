@@ -400,6 +400,7 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
             {chatId === "chatbot"
               ? "🤖 Chat với AI"
               : (
+                
                 users.find((u) => u._id === chatId)?.fname ||
                 users.find((u) => u._id === chatId)?.username ||
                 users.find((u) => u._id === chatId)?.companyName ||

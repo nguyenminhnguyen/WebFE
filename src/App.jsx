@@ -36,12 +36,13 @@ function App() {
         });
         const data = await res.json();
         setUsers(data);
+        console.log("Danh sách người dùng app:", data);
       } catch (err) {
         setUsers([]);
       }
     };
     fetchUsers();
-  }, []);
+  }, [localStorage.getItem("token")]);
 
   // Thêm nút chat vào góc màn hình
   useEffect(() => {
