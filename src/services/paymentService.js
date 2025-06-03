@@ -2,14 +2,14 @@ import axios from 'axios';
 
 const API_URL = 'https://findwork-backend.onrender.com/api';
 
-export const createPaymentOrder = async (jobId) => {
+export const createPaymentOrder = async (jobId, freelancerId) => {
   try {
     const token = localStorage.getItem("token");
-    console.log("Sending request to create payment order with jobId:", jobId);
+    console.log("Sending request to create payment order with jobId:", jobId, "freelancerId:", freelancerId);
     console.log("Token:", token);
     const response = await axios.post(
       `${API_URL}/jobs/${jobId}/create-order`,
-      {},
+      { freelancerId },
       {
         headers: {
           'Content-Type': 'application/json',
