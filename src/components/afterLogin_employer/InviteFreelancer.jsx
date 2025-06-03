@@ -282,7 +282,7 @@ const InviteFreelancer = ({ jobId, setSelectedFreelancer, setShowModal, jobData 
                     <div className="w-20 h-20 rounded-full bg-white border-2 border-[#14a800] shadow-sm overflow-hidden flex-shrink-0">
                       {freelancer.avatar ? (
                         <img
-                          src={`http://localhost:3000/${freelancer.avatar.replace(
+                          src={`https://findwork-backend.onrender.com/${freelancer.avatar.replace(
                             /\\/g,
                             "/"
                           )}`}
