@@ -11,6 +11,7 @@ export default function AuthLogin() {
   const location = useLocation();
   const dest = new URLSearchParams(location.search).get("dest");
   const [role, setRole] = useState("");
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -43,6 +44,9 @@ export default function AuthLogin() {
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("role", data.user.role);
       localStorage.setItem("user", JSON.stringify(data.user));
+      setToken(data.access_token);
+
+      window.dispatchEvent(new Event('loginSuccess'));
 
       // Debug localStorage
       console.log("Stored token:", localStorage.getItem("token"));

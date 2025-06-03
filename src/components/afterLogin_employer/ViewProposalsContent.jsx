@@ -6,6 +6,7 @@ const ViewProposalsContent = ({
   loadingProposals, 
   setSelectedProposal, 
   setShowModal, 
+  handleSendMessage, 
   handleProposalAction,
   jobId,
   job
@@ -194,7 +195,7 @@ const ViewProposalsContent = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          // Xử lý logic gửi tin nhắn
+                          handleSendMessage(proposal.freelancer);
                         }}
                         className="px-3 py-1 text-sm font-medium border-2 border-green-700 text-green-700 rounded-full hover:bg-gray-50"
                       >

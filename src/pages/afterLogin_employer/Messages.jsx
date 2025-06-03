@@ -47,10 +47,6 @@ const Messages = ({ users = [], unreadSenders = new Set() }) => {
     users
   });
 
-
-
-
-
   // Chat.jsx
   return (
     <div

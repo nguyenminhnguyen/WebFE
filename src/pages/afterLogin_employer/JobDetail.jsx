@@ -6,6 +6,7 @@ import ViewProposalsContent from "../../components/afterLogin_employer/ViewPropo
 import HiredFreelancersContent from "../../components/afterLogin_employer/HiredFreelancersContent";
 import FreelancerDetailModal from "../../components/afterLogin_employer/FreelancerDetailModal";
 import JobDetailTabs from "../../components/afterLogin_employer/JobDetailTabs";
+import ChatBox from "../../components/ChatBox";
 
 const JobDetail = () => {
   const { id } = useParams();
@@ -15,8 +16,11 @@ const JobDetail = () => {
   const [activeTab, setActiveTab] = useState("view");
   const [proposals, setProposals] = useState([]);
   const [loadingProposals, setLoadingProposals] = useState(false);
+  const [showChatBox, setShowChatBox] = useState(false);
   const [selectedItemForModal, setSelectedItemForModal] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [unreadSenders, setUnreadSenders] = useState(new Set());
+  const [users, setUsers] = useState([]);
 
   // Fetch job data
   useEffect(() => {
@@ -217,11 +221,10 @@ const JobDetail = () => {
   // Placeholder for send message function (will be passed to modal)
   const handleSendMessage = (freelancer) => {
       if (freelancer) {
-          console.log('Sending message to:', freelancer.fname);
-          // TODO: Implement actual send message logic
-          alert(`Nhắn tin cho ${freelancer.fname || 'freelancer này'} (Chức năng đang được phát triển)`);
-          handleCloseModal();
-      }
+      setSelectedFreelancer(freelancer);
+      setShowChatBox(true);
+      setShowModal(false); // Close the modal when opening chat
+    }
   };
 
   return (
@@ -249,6 +252,7 @@ const JobDetail = () => {
           setSelectedProposal={setSelectedItemForModal} // Use the generic setter
           setShowModal={setShowModal} // Use the generic setter
           handleProposalAction={handleProposalAction}
+          handleSendMessage={handleSendMessage}
           jobId={id}
           job={job}
         />
@@ -259,6 +263,7 @@ const JobDetail = () => {
           setSelectedProposal={setSelectedItemForModal} // Use the generic setter
           setShowModal={setShowModal} // Use the generic setter
           job={job}
+          handleSendMessage={handleSendMessage}
         />
       )}
 
@@ -270,6 +275,23 @@ const JobDetail = () => {
           handleProposalAction={handleProposalAction}
           handleSendMessage={handleSendMessage}
           jobId={id}
+        />
+      )}
+
+      {/* ChatBox */}
+      {showChatBox && (
+        <ChatBox
+          onClose={() => setShowChatBox(false)}
+          receiver={selectedFreelancer}
+          unreadSenders={unreadSenders}
+          onReadMessage={(userId) => {
+            setUnreadSenders(prev => {
+              const newSet = new Set(prev);
+              newSet.delete(userId);
+              return newSet;
+            });
+          }}
+          users={users}
         />
       )}
     </div>

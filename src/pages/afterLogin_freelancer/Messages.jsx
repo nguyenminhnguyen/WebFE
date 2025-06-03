@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatFunc from '../../components/ChatFunc';
 import CryptoJS from "crypto-js";
 import JSEncrypt from "jsencrypt";
@@ -47,6 +47,7 @@ const Messages = ({ users = [], unreadSenders = new Set() }) => {
     users
   });
 
+  // Chat.jsx
   return (
     <div
       className="bg-gray-100 flex overflow-hidden relative font-sans flex-1"
@@ -200,7 +201,7 @@ const Messages = ({ users = [], unreadSenders = new Set() }) => {
                             src={
                               msg.file.startsWith("http")
                                 ? msg.file
-                                : `https://findwork-backend.onrender.com${msg.file.startsWith("/") ? "" : "/"
+                                : `http://localhost:3000${msg.file.startsWith("/") ? "" : "/"
                                 }${msg.file}`
                             }
                             alt="img"
@@ -211,7 +212,7 @@ const Messages = ({ users = [], unreadSenders = new Set() }) => {
                             href={
                               msg.file.startsWith("http")
                                 ? msg.file
-                                : `https://findwork-backend.onrender.com${msg.file.startsWith("/") ? "" : "/"
+                                : `http://localhost:3000${msg.file.startsWith("/") ? "" : "/"
                                 }${msg.file}`
                             }
                             target="_blank"

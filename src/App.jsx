@@ -18,11 +18,26 @@ function App() {
   const socket = connectSocket();
   const user = JSON.parse(localStorage.getItem("user"));
   const myId = user?._id;
+  const [token, setToken] = useState(localStorage.getItem("token"))
 
   // Fetch users một lần khi component mount
   useEffect(() => {
+    const handleLoginSuccess = () => {
+      const newToken = localStorage.getItem("token");
+      setToken(newToken);
+    };
+
+    // Lắng nghe sự kiện loginSuccess
+    window.addEventListener('loginSuccess', handleLoginSuccess);
+
+    return () => {
+      window.removeEventListener('loginSuccess', handleLoginSuccess);
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchUsers = async () => {
-      const token = localStorage.getItem("token");
+       const token = localStorage.getItem("token");
       if (!token) {
         alert("Bạn chưa đăng nhập hoặc token đã hết hạn!");
         return;
@@ -42,7 +57,7 @@ function App() {
       }
     };
     fetchUsers();
-  }, [localStorage.getItem("token")]);
+  }, [token]);
 
   // Thêm nút chat vào góc màn hình
   useEffect(() => {

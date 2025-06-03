@@ -49,6 +49,7 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
   useEffect(() => {
     if (receiver && receiver._id && !hasSetFromReceiver.current) {
       setChatId(receiver._id);
+      handleSelectUser(receiver._id);
       hasSetFromReceiver.current = true;
     }
     // Nếu receiver là null thì reset flag
@@ -62,33 +63,6 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
     setChatId(null);
     hasSetFromReceiver.current = true; // Để tránh tự động set lại chatId từ receiver
   };
-
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Bạn chưa đăng nhập hoặc token đã hết hạn!");
-        return;
-      }
-      try {
-        const res = await fetch("https://findwork-backend.onrender.com/api/message/users", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
-        console.log("API response:", data);
-        setUsers(data);
-        console.log("Danh sách users:", data);
-      } catch (err) {
-        setUsers([]);
-      }
-    };
-    fetchUsers();
-  }, []);
-
 
   const handleSelectUser = async (userId) => {
     setChatId(userId);

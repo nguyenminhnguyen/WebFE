@@ -89,6 +89,7 @@ const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal,
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        handleSendMessage(freelancer)
                         // Xử lý logic gửi tin nhắn
                       }}
                       className="px-3 py-1 text-sm font-medium bg-green-600 text-white rounded-full hover:bg-green-700"
