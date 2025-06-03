@@ -25,13 +25,13 @@ export const createPaymentOrder = async (jobId) => {
   }
 };
 
-export const capturePayment = async (orderId, jobId) => {
+export const capturePayment = async (orderId, jobId, freelancerId) => {
   try {
     const token = localStorage.getItem("token");
-    console.log("Sending request to capture payment with orderId:", orderId, "jobId:", jobId);
+    console.log("Sending request to capture payment with orderId:", orderId, "jobId:", jobId, "freelancerId:", freelancerId);
     const response = await axios.post(
       `${API_URL}/jobs/${jobId}/capture`,
-      { orderId },
+      { orderId, freelancerId },
       {
         headers: {
           'Content-Type': 'application/json',
