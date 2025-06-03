@@ -201,7 +201,7 @@ const Messages = ({ users = [], unreadSenders = new Set() }) => {
                             src={
                               msg.file.startsWith("http")
                                 ? msg.file
-                                : `http://localhost:3000${msg.file.startsWith("/") ? "" : "/"
+                                : `https://findwork-backend.onrender.com/api${msg.file.startsWith("/") ? "" : "/"
                                 }${msg.file}`
                             }
                             alt="img"
@@ -212,7 +212,7 @@ const Messages = ({ users = [], unreadSenders = new Set() }) => {
                             href={
                               msg.file.startsWith("http")
                                 ? msg.file
-                                : `http://localhost:3000${msg.file.startsWith("/") ? "" : "/"
+                                : `https://findwork-backend.onrender.com/api${msg.file.startsWith("/") ? "" : "/"
                                 }${msg.file}`
                             }
                             target="_blank"
