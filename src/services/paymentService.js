@@ -43,6 +43,14 @@ export const capturePayment = async (orderId, jobId) => {
     return response.data;
   } catch (error) {
     console.error("Error capturing payment:", error.response?.data || error.message);
-    throw error.response?.data || error.message;
+    // Nếu có response từ backend, trả về data
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    // Nếu không có response, trả về object error
+    return {
+      status: "Error",
+      message: error.message || "Failed to capture payment"
+    };
   }
 }; 

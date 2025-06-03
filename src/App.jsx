@@ -28,7 +28,7 @@ function App() {
         return;
       }
       try {
-        const res = await fetch("http://localhost:3000/api/message/users", {
+        const res = await fetch("https://findwork-backend.onrender.com/api/message/users", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

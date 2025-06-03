@@ -69,7 +69,7 @@ const ChatFunc = ({ onClose, receiver, unreadSenders, onReadMessage, users }) =>
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:3000/api/message/getmessages/${userId}?page=1&limit=10`,
+        `https://findwork-backend.onrender.com/api/message/getmessages/${userId}?page=1&limit=10`,
         {
           method: "GET",
           headers: {
@@ -96,7 +96,7 @@ const ChatFunc = ({ onClose, receiver, unreadSenders, onReadMessage, users }) =>
       const token = localStorage.getItem("token");
       const nextPage = page + 1;
       const res = await fetch(
-        `http://localhost:3000/api/message/getmessages/${chatId}?page=${nextPage}&limit=10`,
+        `https://findwork-backend.onrender.com/api/message/getmessages/${chatId}?page=${nextPage}&limit=10`,
         {
           method: "GET",
           headers: {
@@ -132,7 +132,7 @@ const ChatFunc = ({ onClose, receiver, unreadSenders, onReadMessage, users }) =>
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(
-          `http://localhost:3000/api/message/chatbot?question=${encodeURIComponent(input)}`,
+          `https://findwork-backend.onrender.com/api/message/chatbot?question=${encodeURIComponent(input)}`,
           {
             method: "GET",
             headers: {
@@ -203,7 +203,7 @@ const ChatFunc = ({ onClose, receiver, unreadSenders, onReadMessage, users }) =>
 
         if (file) formData.append("file", file);
 
-        const response = await fetch(`http://localhost:3000/api/message/send/${chatId}`, {
+        const response = await fetch(`https://findwork-backend.onrender.com/api/message/send/${chatId}`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

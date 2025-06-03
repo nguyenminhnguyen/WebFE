@@ -17,10 +17,16 @@ const ViewProposalsContent = ({
         return;
       }
       console.log("jobId gửi lên create-order:", jobId);
-      // Lưu proposalId vào localStorage để backend có thể sử dụng khi capture
+      // Tìm proposal để lấy freelancerId
+      const proposal = proposals.find(p => p.id === proposalId);
+      if (!proposal || !proposal.freelancer) {
+        throw new Error('Không tìm thấy thông tin freelancer');
+      }
+      // Lưu cả proposalId và freelancerId vào localStorage
       localStorage.setItem('pendingAcceptProposalId', proposalId);
-      // Tạo order PayPal
-      const orderData = await createPaymentOrder(jobId);
+      localStorage.setItem('pendingAcceptFreelancerId', proposal.freelancer._id);
+      // Tạo order PayPal với freelancerId
+      const orderData = await createPaymentOrder(jobId, proposal.freelancer._id);
       if (orderData.status === "Success") {
         window.location.href = orderData.data.approvalUrl;
       } else {
@@ -32,13 +38,21 @@ const ViewProposalsContent = ({
     }
   };
 
-  const handlePayOnly = async () => {
+  const handlePayOnly = async (proposalId) => {
     try {
       if (!jobId || jobId === 'undefined') {
         alert('Không tìm thấy jobId. Vui lòng tải lại trang hoặc liên hệ quản trị viên.');
         return;
       }
-      const orderData = await createPaymentOrder(jobId);
+      // Tìm proposal để lấy freelancerId
+      const proposal = proposals.find(p => p.id === proposalId);
+      if (!proposal || !proposal.freelancer) {
+        throw new Error('Không tìm thấy thông tin freelancer');
+      }
+      // Lưu cả proposalId và freelancerId vào localStorage
+      localStorage.setItem('pendingAcceptProposalId', proposalId);
+      localStorage.setItem('pendingAcceptFreelancerId', proposal.freelancer._id);
+      const orderData = await createPaymentOrder(jobId, proposal.freelancer._id);
       if (orderData.status === "Success") {
         window.location.href = orderData.data.approvalUrl;
       } else {

@@ -12,17 +12,15 @@ const JobDetail = () => {
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("view"); // Thêm state để quản lý tab
+  const [activeTab, setActiveTab] = useState("view");
   const [proposals, setProposals] = useState([]);
   const [loadingProposals, setLoadingProposals] = useState(false);
-  
-  // Changed state name for clarity and broader use
   const [selectedItemForModal, setSelectedItemForModal] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+  // Fetch job data
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log(id);
     fetch(`https://findwork-backend.onrender.com/api/jobs/${id}`, {
       method: "GET",
       headers: {
@@ -48,47 +46,43 @@ const JobDetail = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // Thêm useEffect để lấy danh sách proposals
+  // Fetch proposals data
   useEffect(() => {
     const fetchProposals = async () => {
-      if (activeTab === "proposals") {
-        setLoadingProposals(true);
-        try {
-          const token = localStorage.getItem("token");
-          const response = await fetch(
-            `https://findwork-backend.onrender.com/api/jobs/${id}/proposal`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (!response.ok) throw new Error("Không thể tải danh sách yêu cầu");
-
-          const data = await response.json();
-          if (data.status === "Success") {
-            // Cập nhật lại cách lấy dữ liệu proposals
-            setProposals(
-              Array.isArray(data.data.applications)
-                ? data.data.applications
-                : []
-            );
-            console.log("Proposals data:", data.data.applications); // Log để kiểm tra dữ liệu
+      setLoadingProposals(true);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `https://findwork-backend.onrender.com/api/jobs/${id}/proposal`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
           }
-        } catch (err) {
-          console.error("Lỗi khi lấy proposals:", err);
-          setProposals([]);
-        } finally {
-          setLoadingProposals(false);
+        );
+
+        if (!response.ok) throw new Error("Không thể tải danh sách yêu cầu");
+
+        const data = await response.json();
+        if (data.status === "Success") {
+          setProposals(
+            Array.isArray(data.data.applications)
+              ? data.data.applications
+              : []
+          );
         }
+      } catch (err) {
+        console.error("Lỗi khi lấy proposals:", err);
+        setProposals([]);
+      } finally {
+        setLoadingProposals(false);
       }
     };
 
     fetchProposals();
-  }, [id, activeTab]);
+  }, [id]);
 
   // Refetch lại job mỗi khi chuyển sang tab proposals để lấy trạng thái mới nhất (pay, v.v.)
   useEffect(() => {

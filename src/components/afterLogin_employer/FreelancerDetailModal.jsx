@@ -33,10 +33,11 @@ const FreelancerDetailModal = ({
         return;
       }
       console.log("jobId gửi lên create-order:", jobId);
-      // Lưu proposalId vào localStorage để backend có thể sử dụng khi capture
+      // Lưu cả proposalId và freelancerId vào localStorage
       localStorage.setItem('pendingAcceptProposalId', proposalId);
-      // Tạo order PayPal
-      const orderData = await createPaymentOrder(jobId);
+      localStorage.setItem('pendingAcceptFreelancerId', freelancer._id);
+      // Tạo order PayPal với freelancerId
+      const orderData = await createPaymentOrder(jobId, freelancer._id);
       if (orderData.status === "Success") {
         window.location.href = orderData.data.approvalUrl;
       } else {
