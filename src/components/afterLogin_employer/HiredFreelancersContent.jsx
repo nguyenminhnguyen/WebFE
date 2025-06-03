@@ -1,6 +1,6 @@
 import React from "react";
 
-const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal, job }) => {
+const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal, job, handleSendMessage }) => {
   // Lọc các proposal đã được chấp nhận
   const acceptedProposals = proposals.filter(p => p.status === "accepted");
 
@@ -89,7 +89,7 @@ const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal,
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleSendMessage(freelancer)
+                        handleSendMessage(proposal.freelancer)
                         // Xử lý logic gửi tin nhắn
                       }}
                       className="px-3 py-1 text-sm font-medium bg-green-600 text-white rounded-full hover:bg-green-700"

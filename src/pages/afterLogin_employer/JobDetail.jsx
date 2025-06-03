@@ -17,6 +17,7 @@ const JobDetail = () => {
   const [proposals, setProposals] = useState([]);
   const [loadingProposals, setLoadingProposals] = useState(false);
   const [showChatBox, setShowChatBox] = useState(false);
+  const [selectedFreelancer, setSelectedFreelancer] = useState(null);
   const [selectedItemForModal, setSelectedItemForModal] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [unreadSenders, setUnreadSenders] = useState(new Set());
@@ -241,6 +242,7 @@ const JobDetail = () => {
            jobId={id} 
            setSelectedFreelancer={setSelectedItemForModal}
            setShowModal={setShowModal}
+           handleSendMessage={handleSendMessage}
            jobData={job}
          />
       )}

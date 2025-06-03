@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { getFreelancers, getAISuggestedFreelancers } from "../../services/freelancerService";
 import { countryOptions } from "../../data/CountryOption";
 
-const InviteFreelancer = ({ jobId, setSelectedFreelancer, setShowModal, jobData }) => {
+const InviteFreelancer = ({ jobId, setSelectedFreelancer, setShowModal, jobData, handleSendMessage }) => {
   console.log("InviteFreelancer jobData:", jobData);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -319,7 +319,10 @@ const InviteFreelancer = ({ jobId, setSelectedFreelancer, setShowModal, jobData 
                         </div>
                         <button
                           className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 ml-4 flex-shrink-0"
-                          onClick={(e) => { e.stopPropagation(); toast.info("Chức năng đang được phát triển");}}
+                          onClick={(e) => { 
+                            e.stopPropagation();
+                            handleSendMessage(freelancer);
+                          }}
                         >
                           <FaEnvelope className="inline-block mr-2" />
                           Nhắn tin
