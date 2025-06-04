@@ -307,7 +307,6 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
 
   const handleStartVideoCall = async () => {
 
-    console.log("chatid: ", chatId);
     setShowVideoCall(true);
     // Lấy camera/mic
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -324,6 +323,7 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
       if (remoteVideoRef.current) remoteVideoRef.current.srcObject = event.streams[0];
     };
 
+    console.log("chatiddd: ", chatId);
     // Gửi offer
     pc.onicecandidate = (event) => {
       if (event.candidate) {

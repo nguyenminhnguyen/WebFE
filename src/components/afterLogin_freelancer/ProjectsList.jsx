@@ -273,7 +273,6 @@ const ProjectsList = ({ isRecommended = false }) => {
 
       if (
         response.status === 201 &&
-        response.statusText === "Created" &&
         response.data.message === "Application submitted successfully"
       ) {
         setConfirmationModal({
