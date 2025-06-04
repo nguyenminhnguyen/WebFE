@@ -325,7 +325,7 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
     // Gửi offer
     pc.onicecandidate = (event) => {
       if (event.candidate) {
-        socket.emit("webrtc-signal", { to: chatId, candidate: event.candidate });
+        socket.emit("webrtc-signal", { to: chatId, data: { candidate: event.candidate } });
       }
     };
 
@@ -343,48 +343,68 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
   };
 
   useEffect(() => {
-    if (!socket) return;
+  if (!socket) return;
 
-    socket.on("webrtc-signal", async ({ from, data }) => {
-      // Phân loại tín hiệu
-      if (data.offer) {
-        console.log("Nhận tín hiệu gọi video từ:", from, "offer:", data.offer);
-        if (!showVideoCall) setShowVideoCall(true);
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localStreamRef.current = stream;
-        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+  const handleSignal = async ({ from, data }) => {
+    if (!data) return;
 
-        const pc = new RTCPeerConnection();
-        peerConnectionRef.current = pc;
-        stream.getTracks().forEach(track => pc.addTrack(track, stream));
-        pc.ontrack = (event) => {
-          if (remoteVideoRef.current) remoteVideoRef.current.srcObject = event.streams[0];
-        };
-        pc.onicecandidate = (event) => {
-          if (event.candidate) {
-            socket.emit("webrtc-candidate", { to: from, candidate: event.candidate });
-          }
-        };
-        await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        // Khi gửi answer:
-        socket.emit("webrtc-signal", { to: from, data: { answer } });
-      } else if (data.answer) {
-        // Nhận answer
-        await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(data.answer));
-      } else if (data.candidate) {
-        // Nhận candidate
-        try {
-          await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
-        } catch (e) {}
+    if (data.offer) {
+      console.log("📥 Received offer from", from);
+      if (!showVideoCall) setShowVideoCall(true);
+
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      localStreamRef.current = stream;
+      if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+
+      const pc = new RTCPeerConnection();
+      peerConnectionRef.current = pc;
+      stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+      pc.ontrack = (event) => {
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.srcObject = event.streams[0];
+        }
+      };
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit("webrtc-signal", {
+            to: from,
+            data: { candidate: event.candidate }
+          });
+        }
+      };
+
+      await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      socket.emit("webrtc-signal", { to: from, data: { answer } });
+
+    } else if (data.answer) {
+      console.log("📥 Received answer from", from);
+      await peerConnectionRef.current?.setRemoteDescription(
+        new RTCSessionDescription(data.answer)
+      );
+
+    } else if (data.candidate) {
+      console.log("📥 Received candidate from", from);
+      try {
+        await peerConnectionRef.current?.addIceCandidate(
+          new RTCIceCandidate(data.candidate)
+        );
+      } catch (err) {
+        console.error("Error adding candidate", err);
       }
-    });
+    }
+  };
 
-    return () => {
-      socket.off("webrtc-signal");
-    };
-  }, [showVideoCall, chatId]);
+  socket.on("webrtc-signal", handleSignal);
+
+  return () => {
+    socket.off("webrtc-signal", handleSignal);
+  };
+}, [chatId]);
+
 
   return (
     <div className="fixed bottom-6 right-6 z-50 w-80 max-h-[80vh] bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col">
