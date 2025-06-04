@@ -338,72 +338,90 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
 
   const handleEndVideoCall = () => {
     setShowVideoCall(false);
-    if (peerConnectionRef.current) peerConnectionRef.current.close();
-    if (localStreamRef.current) localStreamRef.current.getTracks().forEach(t => t.stop());
-  };
-
-  useEffect(() => {
-  if (!socket) return;
-
-  const handleSignal = async ({ from, data }) => {
-    if (!data) return;
-
-    if (data.offer) {
-      console.log("📥 Received offer from", from);
-      if (!showVideoCall) setShowVideoCall(true);
-
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      localStreamRef.current = stream;
-      if (localVideoRef.current) localVideoRef.current.srcObject = stream;
-
-      const pc = new RTCPeerConnection();
-      peerConnectionRef.current = pc;
-      stream.getTracks().forEach(track => pc.addTrack(track, stream));
-
-      pc.ontrack = (event) => {
-        if (remoteVideoRef.current) {
-          remoteVideoRef.current.srcObject = event.streams[0];
-        }
-      };
-
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          socket.emit("webrtc-signal", {
-            to: from,
-            data: { candidate: event.candidate }
-          });
-        }
-      };
-
-      await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      socket.emit("webrtc-signal", { to: from, data: { answer } });
-
-    } else if (data.answer) {
-      console.log("📥 Received answer from", from);
-      await peerConnectionRef.current?.setRemoteDescription(
-        new RTCSessionDescription(data.answer)
-      );
-
-    } else if (data.candidate) {
-      console.log("📥 Received candidate from", from);
-      try {
-        await peerConnectionRef.current?.addIceCandidate(
-          new RTCIceCandidate(data.candidate)
-        );
-      } catch (err) {
-        console.error("Error adding candidate", err);
-      }
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+      peerConnectionRef.current = null;
+    }
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach(t => t.stop());
+      localStreamRef.current = null;
     }
   };
 
-  socket.on("webrtc-signal", handleSignal);
+  useEffect(() => {
+    if (!socket) return;
 
-  return () => {
-    socket.off("webrtc-signal", handleSignal);
-  };
-}, [chatId]);
+    const handleSignal = async ({ from, data }) => {
+      if (!data) return;
+
+      if (data.offer) {
+        console.log("📥 Received offer from", from);
+        if (!showVideoCall) setShowVideoCall(true);
+
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localStreamRef.current = stream;
+        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+
+        const pc = new RTCPeerConnection();
+        peerConnectionRef.current = pc;
+        stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+        pc.ontrack = (event) => {
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = event.streams[0];
+          }
+        };
+
+        pc.onicecandidate = (event) => {
+          if (event.candidate) {
+            socket.emit("webrtc-signal", {
+              to: from,
+              data: { candidate: event.candidate }
+            });
+          }
+        };
+
+        await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        socket.emit("webrtc-signal", { to: from, data: { answer } });
+
+      } else if (data.answer) {
+        console.log("📥 Received answer from", from);
+        if (peerConnectionRef.current?.signalingState !== 'closed') {
+          await peerConnectionRef.current?.setRemoteDescription(
+            new RTCSessionDescription(data.answer)
+          );
+        }
+
+      } else if (data.candidate) {
+        console.log("📥 Received candidate from", from);
+        try {
+          if (peerConnectionRef.current?.signalingState !== 'closed') {
+            await peerConnectionRef.current?.addIceCandidate(
+              new RTCIceCandidate(data.candidate)
+            );
+          }
+        } catch (err) {
+          console.error("Error adding candidate", err);
+        }
+      }
+    };
+
+    socket.on("webrtc-signal", handleSignal);
+
+    return () => {
+      socket.off("webrtc-signal", handleSignal);
+      if (peerConnectionRef.current) {
+        peerConnectionRef.current.close();
+        peerConnectionRef.current = null;
+      }
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach(track => track.stop());
+        localStreamRef.current = null;
+      }
+    };
+  }, [chatId]);
 
 
   return (

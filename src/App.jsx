@@ -71,10 +71,26 @@ function App() {
     chatButton.onclick = () => setShowChat(true);
     document.body.appendChild(chatButton);
 
+    // Thêm logic để ẩn/hiện nút chat dựa vào showChat
+    const updateChatButtonVisibility = () => {
+      chatButton.style.display = showChat ? 'none' : 'block';
+    };
+
+    // Gọi lần đầu để set trạng thái ban đầu
+    updateChatButtonVisibility();
+
+    // Lắng nghe sự kiện khi showChat thay đổi
+    const handleShowChatChange = () => {
+      updateChatButtonVisibility();
+    };
+
+    window.addEventListener('showChatChange', handleShowChatChange);
+
     return () => {
       document.body.removeChild(chatButton);
+      window.removeEventListener('showChatChange', handleShowChatChange);
     };
-  }, []);
+  }, [showChat]); // Thêm showChat vào dependencies
 
   // Xử lý kéo thả
   const handleMouseDown = (e) => {
@@ -165,7 +181,11 @@ function App() {
         <AnimatedRoutes users={users} unreadSenders={unreadSenders} />
         {showChat && (
           <ChatBox
-            onClose={() => setShowChat(false)}
+            onClose={() => {
+              setShowChat(false);
+              // Dispatch event khi đóng chat box
+              window.dispatchEvent(new Event('showChatChange'));
+            }}
             receiver={null}
             unreadSenders={unreadSenders}
             onReadMessage={handleReadMessage}
