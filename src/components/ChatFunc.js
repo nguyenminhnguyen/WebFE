@@ -419,6 +419,7 @@ const ChatFunc = ({ onClose, receiver, unreadSenders, onReadMessage, users }) =>
     setFile,
     loadingMore,
     handleSignal
+    
   };
 };
 

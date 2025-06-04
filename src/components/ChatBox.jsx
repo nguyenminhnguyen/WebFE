@@ -306,6 +306,8 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
 
 
   const handleStartVideoCall = async () => {
+
+    console.log("chatid: ", chatId);
     setShowVideoCall(true);
     // Lấy camera/mic
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
