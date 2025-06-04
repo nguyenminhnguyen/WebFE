@@ -9,6 +9,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../../components/layout/AuthLayout';
 import { connectSocket } from "../../../services/socket";
+import CryptoJS from "crypto-js";
+import JSEncrypt from "jsencrypt";
 
 export default function ClientRegister({ onBack }) {
   const [step, setStep] = useState(1);
@@ -40,12 +42,25 @@ export default function ClientRegister({ onBack }) {
       return;
     }
     try {
+      // Sinh cặp khóa RSA trước khi gửi đăng ký
+      const crypt = new JSEncrypt({ default_key_size: 2048 });
+      crypt.getKey();
+      const publicKey = crypt.getPublicKey();
+      const privateKey = crypt.getPrivateKey();
+
+      const password = formData.companyName;
+      const encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, password).toString();
+      console.log("password:", password);
+      console.log("Encrypted Private Key:", encryptedPrivateKey);
+
+      const formDataWithKey = { ...formData, publicKey, encryptedPrivateKey };
+
       const response = await fetch(
         'https://findwork-backend.onrender.com/api/employer/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(formDataWithKey),
         }
       );
 

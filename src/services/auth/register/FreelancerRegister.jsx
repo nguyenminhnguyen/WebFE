@@ -15,6 +15,8 @@ import AuthLayout from "../../../components/layout/AuthLayout";
 import Select from "react-select";
 import { countryOptions } from "../../../data/CountryOption";
 import { connectSocket } from "../../../services/socket";
+import JSEncrypt from "jsencrypt";
+import CryptoJS from "crypto-js";
 
 export default function FreelancerRegister({ onBack }) {
   const [step, setStep] = useState(1);
@@ -121,8 +123,21 @@ export default function FreelancerRegister({ onBack }) {
     }
 
     try {
-      // Tạo FormData object để gửi file
-      const formDataToSend = new FormData();
+       // Sinh cặp khóa RSA
+       const crypt = new JSEncrypt({ default_key_size: 2048 });
+       crypt.getKey();
+       const publicKey = crypt.getPublicKey();
+       const privateKey = crypt.getPrivateKey();
+ 
+       // Lưu privateKey vào localStorage (chỉ client giữ)
+       localStorage.setItem("privateKey", privateKey);
+ 
+       // Mã hóa privateKey bằng mật khẩu
+       const password = formData.username;
+       const encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, password).toString();
+ 
+       // Tạo FormData object để gửi file
+       const formDataToSend = new FormData();
 
       // Thêm các trường thông tin vào FormData
       Object.keys(formData).forEach((key) => {
@@ -134,6 +149,10 @@ export default function FreelancerRegister({ onBack }) {
           formDataToSend.append(key, formData[key].toString());
         }
       });
+
+      formDataToSend.append("publicKey", publicKey);
+      formDataToSend.append("encryptedPrivateKey", encryptedPrivateKey);
+
 
       // Log ra để kiểm tra dữ liệu trước khi gửi
       console.log("FormData contents:");
