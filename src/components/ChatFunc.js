@@ -283,7 +283,7 @@ const ChatFunc = ({ onClose, receiver, unreadSenders, onReadMessage, users }) =>
   }, [messages, decryptedPrivateKey, myId, chatId]);
 
   const handleStartVideoCall = async () => {
-    console.log("chatid vidcall: ",chatId);
+
     setShowVideoCall(true);
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     localStreamRef.current = stream;
@@ -302,6 +302,8 @@ const ChatFunc = ({ onClose, receiver, unreadSenders, onReadMessage, users }) =>
         socket.emit("webrtc-signal", { to: chatId, data: { candidate: event.candidate } });
       }
     };
+
+    console.log("chatid vidcall: ", chatId);
 
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
