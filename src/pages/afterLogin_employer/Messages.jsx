@@ -38,7 +38,8 @@ const Messages = ({ users = [], unreadSenders = new Set() }) => {
     handleEndVideoCall,
     setInput,
     setFile,
-    loadingMore
+    loadingMore,
+    handleSignal
   } = ChatFunc({
     onClose: () => { },
     receiver: null,

@@ -354,6 +354,8 @@ const ChatBox = ({ onClose, receiver, unreadSenders, onReadMessage, users }) => 
     const handleSignal = async ({ from, data }) => {
       if (!data) return;
 
+      console.log("from chatbox: ", from);
+
       if (data.offer) {
         console.log("📥 Received offer from", from);
         if (!showVideoCall) setShowVideoCall(true);
