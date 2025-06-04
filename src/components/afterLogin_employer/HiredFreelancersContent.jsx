@@ -1,14 +1,22 @@
 import React from "react";
 
-const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal, job, handleSendMessage }) => {
+const HiredFreelancersContent = ({
+  proposals,
+  setSelectedProposal,
+  setShowModal,
+  job,
+  handleSendMessage,
+}) => {
   // Lọc các proposal đã được chấp nhận
-  const acceptedProposals = proposals.filter(p => p.status === "accepted");
+  const acceptedProposals = proposals.filter((p) => p.status === "accepted");
 
   return (
     <div className="bg-white rounded-lg shadow-md">
       <h2 className="text-xl font-bold mt-12 ml-5 mb-6">Freelancer đã thuê</h2>
       {acceptedProposals.length === 0 ? (
-        <p className="text-gray-600 text-center">Chưa có freelancer nào được thuê</p>
+        <p className="text-gray-600 text-center">
+          Chưa có freelancer nào được thuê
+        </p>
       ) : (
         <div className="space-y-4">
           {acceptedProposals.map((proposal) => (
@@ -20,10 +28,14 @@ const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal,
                 <div className="w-20 h-20 rounded-full bg-white border-2 border-[#14a800] shadow-sm overflow-hidden">
                   {proposal.freelancer.avatar ? (
                     <img
-                      src={`https://findwork-backend.onrender.com/${proposal.freelancer.avatar.replace(
-                        /\\/g,
-                        "/"
-                      )}`}
+                      src={
+                        proposal.freelancer.avatar
+                          ? `https://findwork-backend.onrender.com/${proposal.freelancer.avatar.replace(
+                              /\\/g,
+                              "/"
+                            )}`
+                          : "https://ui-avatars.com/api/?name=Freelancer&background=random"
+                      }
                       alt={proposal.freelancer.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -57,7 +69,7 @@ const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal,
                     </span>
                   </div>
                   <p className="text-sm text-gray-700 mt-2 line-clamp-2">
-                  {proposal.proposalText || "Chưa có đề xuất"}
+                    {proposal.proposalText || "Chưa có đề xuất"}
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {proposal.freelancer.skills
@@ -79,7 +91,7 @@ const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal,
                   <div className="flex justify-end space-x-2 mt-3">
                     <button
                       onClick={() => {
-                        setSelectedProposal({...proposal, source: 'hired'});
+                        setSelectedProposal({ ...proposal, source: "hired" });
                         setShowModal(true);
                       }}
                       className="px-3 py-1 text-sm font-medium border-2 border-green-700 text-green-700 rounded-full hover:bg-gray-50"
@@ -89,7 +101,7 @@ const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal,
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleSendMessage(proposal.freelancer)
+                        handleSendMessage(proposal.freelancer);
                         // Xử lý logic gửi tin nhắn
                       }}
                       className="px-3 py-1 text-sm font-medium bg-green-600 text-white rounded-full hover:bg-green-700"
@@ -107,4 +119,4 @@ const HiredFreelancersContent = ({ proposals, setSelectedProposal, setShowModal,
   );
 };
 
-export default HiredFreelancersContent; 
+export default HiredFreelancersContent;
