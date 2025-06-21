@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   FaUser,
   FaEnvelope,
   FaPhone,
   FaMapMarkerAlt,
-  FaBriefcase,
-  FaGraduationCap,
-  FaStar,
   FaEdit,
   FaSave,
   FaTimes,
-  FaCamera
+  FaCamera,
+  FaFilePdf,
 } from "react-icons/fa";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const Profile = () => {
   const [profile, setProfile] = useState({
@@ -32,10 +32,11 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
-  
+
   const [selectedAvatarFile, setSelectedAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [avatarError, setAvatarError] = useState("");
+  const profileRef = useRef(null);
 
   useEffect(() => {
     const loadProfile = () => {
@@ -56,7 +57,12 @@ const Profile = () => {
             avatarUrl: userData.avatar || "",
           });
           if (userData.avatar) {
-            setAvatarPreview(`https://findwork-backend.onrender.com/${userData.avatar.replace(/\\/g, "/")}`);
+            setAvatarPreview(
+              `https://findwork-backend.onrender.com/${userData.avatar.replace(
+                /\\/g,
+                "/"
+              )}`
+            );
           }
         }
       } catch (err) {
@@ -85,7 +91,10 @@ const Profile = () => {
 
   const handleAddSkill = () => {
     if (newSkill.trim() && !profile.skills.includes(newSkill.trim())) {
-      setProfile((prev) => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
+      setProfile((prev) => ({
+        ...prev,
+        skills: [...prev.skills, newSkill.trim()],
+      }));
       setNewSkill("");
     }
   };
@@ -126,13 +135,27 @@ const Profile = () => {
       setSelectedAvatarFile(file);
     } else {
       setSelectedAvatarFile(null);
-      setAvatarPreview(profile.avatarUrl ? `http://https://findwork-backend.onrender.com:3000/${profile.avatarUrl.replace(/\\/g, "/")}` : null);
+      setAvatarPreview(
+        profile.avatarUrl
+          ? `http://https://findwork-backend.onrender.com:3000/${profile.avatarUrl.replace(
+              /\\/g,
+              "/"
+            )}`
+          : null
+      );
     }
   };
 
   const handleRemoveSelectedAvatar = () => {
     setSelectedAvatarFile(null);
-    setAvatarPreview(profile.avatarUrl ? `http://https://findwork-backend.onrender.com:3000/${profile.avatarUrl.replace(/\\/g, "/")}` : null);
+    setAvatarPreview(
+      profile.avatarUrl
+        ? `http://https://findwork-backend.onrender.com:3000/${profile.avatarUrl.replace(
+            /\\/g,
+            "/"
+          )}`
+        : null
+    );
     setAvatarError("");
   };
 
@@ -171,6 +194,62 @@ const Profile = () => {
     }));
   };
 
+  const handleExportPDF = () => {
+    if (!profileRef.current) return;
+
+    const buttonsContainer = profileRef.current.querySelector(
+      ".action-buttons-container"
+    );
+    if (buttonsContainer) {
+      buttonsContainer.style.display = "none";
+    }
+
+    toast.info("Đang xuất CV của bạn ra PDF...");
+
+    html2canvas(profileRef.current, {
+      useCORS: true,
+      scale: 2,
+    })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgWidth = pdfWidth;
+        const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        // Thêm trang đầu tiên
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+
+        // Thêm các trang tiếp theo nếu cần
+        while (heightLeft > 0) {
+          position -= pdfHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+
+        pdf.save(`CV-${profile.name}.pdf`);
+        toast.success("Xuất PDF thành công!");
+      })
+      .catch((err) => {
+        console.error("Lỗi khi xuất PDF:", err);
+        toast.error("Có lỗi xảy ra khi xuất PDF.");
+      })
+      .finally(() => {
+        // Đảm bảo các nút được hiển thị lại
+        if (buttonsContainer) {
+          buttonsContainer.style.display = "flex";
+        }
+      });
+  };
+
   const handleSave = async () => {
     setLoading(true);
     setError(null);
@@ -178,10 +257,20 @@ const Profile = () => {
     try {
       const formDataToSend = new FormData();
 
-      Object.keys(profile).forEach(key => {
-        if (key !== 'avatarUrl' && key !== 'skills' && key !== 'education' && key !== 'rating' && key !== 'completedProjects') {
+      Object.keys(profile).forEach((key) => {
+        if (
+          key !== "avatarUrl" &&
+          key !== "skills" &&
+          key !== "education" &&
+          key !== "rating" &&
+          key !== "completedProjects"
+        ) {
           if (profile[key] !== null && profile[key] !== undefined) {
-            if (key === 'location' && typeof profile[key] === 'object' && profile[key] !== null) {
+            if (
+              key === "location" &&
+              typeof profile[key] === "object" &&
+              profile[key] !== null
+            ) {
               formDataToSend.append(key, profile[key].label);
             } else {
               formDataToSend.append(key, profile[key]);
@@ -191,32 +280,41 @@ const Profile = () => {
       });
 
       (profile.skills || []).forEach((skill, index) => {
-        formDataToSend.append(`skills[${index}]`, skill || '');
+        formDataToSend.append(`skills[${index}]`, skill || "");
       });
 
       (profile.education || []).forEach((edu, index) => {
-        formDataToSend.append(`education[${index}][school]`, edu.school || '');
-        formDataToSend.append(`education[${index}][degree]`, edu.degree || '');
-        formDataToSend.append(`education[${index}][startDate]`, edu.startDate || '');
-        formDataToSend.append(`education[${index}][endDate]`, edu.endDate || '');
-        formDataToSend.append(`education[${index}][description]`, edu.description || '');
+        formDataToSend.append(`education[${index}][school]`, edu.school || "");
+        formDataToSend.append(`education[${index}][degree]`, edu.degree || "");
+        formDataToSend.append(
+          `education[${index}][startDate]`,
+          edu.startDate || ""
+        );
+        formDataToSend.append(
+          `education[${index}][endDate]`,
+          edu.endDate || ""
+        );
+        formDataToSend.append(
+          `education[${index}][description]`,
+          edu.description || ""
+        );
       });
 
       if (selectedAvatarFile) {
-        formDataToSend.append('avatar', selectedAvatarFile);
+        formDataToSend.append("avatar", selectedAvatarFile);
       }
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        throw new Error('Không tìm thấy token xác thực.');
+        throw new Error("Không tìm thấy token xác thực.");
       }
 
       const response = await fetch(
         "https://findwork-backend.onrender.com/api/freelancer/profile",
         {
-          method: 'PUT',
+          method: "PUT",
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           body: formDataToSend,
         }
@@ -225,41 +323,58 @@ const Profile = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || data.error || 'Cập nhật hồ sơ thất bại!');
+        throw new Error(
+          data.message || data.error || "Cập nhật hồ sơ thất bại!"
+        );
       }
 
       if (data.profile) {
         const updatedProfileData = data.profile;
-        setProfile(prev => ({ 
-          ...prev, 
+        setProfile((prev) => ({
+          ...prev,
           ...updatedProfileData,
-          avatarUrl: updatedProfileData.avatar || prev.avatarUrl
+          avatarUrl: updatedProfileData.avatar || prev.avatarUrl,
         }));
 
-        if (updatedProfileData.avatar && updatedProfileData.avatar !== profile.avatarUrl) {
-          setAvatarPreview(`http://https://findwork-backend.onrender.com:3000/${updatedProfileData.avatar.replace(/\\/g, "/")}`);
+        if (
+          updatedProfileData.avatar &&
+          updatedProfileData.avatar !== profile.avatarUrl
+        ) {
+          setAvatarPreview(
+            `http://https://findwork-backend.onrender.com:3000/${updatedProfileData.avatar.replace(
+              /\\/g,
+              "/"
+            )}`
+          );
         }
         setSelectedAvatarFile(null);
 
         const userData = JSON.parse(localStorage.getItem("user"));
-        if(userData) {
-          const updatedUserData = { ...userData, ...updatedProfileData, avatar: updatedProfileData.avatar || userData.avatar };
+        if (userData) {
+          const updatedUserData = {
+            ...userData,
+            ...updatedProfileData,
+            avatar: updatedProfileData.avatar || userData.avatar,
+          };
           localStorage.setItem("user", JSON.stringify(updatedUserData));
         }
-
       } else if (data.avatarUrl) {
-        setProfile(prev => ({ ...prev, avatarUrl: data.avatarUrl }));
-        setAvatarPreview(`https://findwork-backend.onrender.com/${data.avatarUrl.replace(/\\/g, "/")}`);
+        setProfile((prev) => ({ ...prev, avatarUrl: data.avatarUrl }));
+        setAvatarPreview(
+          `https://findwork-backend.onrender.com/${data.avatarUrl.replace(
+            /\\/g,
+            "/"
+          )}`
+        );
         setSelectedAvatarFile(null);
       }
 
       setIsEditing(false);
-      toast.success('Cập nhật hồ sơ thành công!');
-
+      toast.success("Cập nhật hồ sơ thành công!");
     } catch (err) {
       console.error("Error saving profile:", err);
-      setError(err.message || 'Đã xảy ra lỗi khi cập nhật hồ sơ.');
-      toast.error(err.message || 'Đã xảy ra lỗi khi cập nhật hồ sơ.');
+      setError(err.message || "Đã xảy ra lỗi khi cập nhật hồ sơ.");
+      toast.error(err.message || "Đã xảy ra lỗi khi cập nhật hồ sơ.");
     } finally {
       setLoading(false);
     }
@@ -282,7 +397,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" ref={profileRef}>
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6 sm:py-8">
@@ -294,14 +409,16 @@ const Profile = () => {
                       <img
                         src={avatarPreview}
                         alt="Profile Preview"
-
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <FaUser className="w-full h-full text-gray-300" />
                     )}
                     {isEditing && (
-                      <label htmlFor="avatarUpload" className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+                      <label
+                        htmlFor="avatarUpload"
+                        className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
                         <FaCamera className="w-6 h-6 text-white" />
                         <input
                           id="avatarUpload"
@@ -347,23 +464,38 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex gap-2 w-full sm:w-auto action-buttons-container">
                 {isEditing ? (
                   <button
                     onClick={handleSave}
                     disabled={loading}
                     className="flex-1 sm:flex-none bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors flex items-center justify-center gap-2"
                   >
-                    {loading ? 'Đang lưu...' : <><FaSave /> Lưu</>}
+                    {loading ? (
+                      "Đang lưu..."
+                    ) : (
+                      <>
+                        <FaSave /> Lưu
+                      </>
+                    )}
                   </button>
                 ) : (
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="w-full sm:w-auto bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors flex items-center justify-center gap-2"
-                  >
-                    <FaEdit />
-                    Chỉnh sửa
-                  </button>
+                  <>
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="w-full sm:w-auto bg-[#14a800] text-white px-4 py-2 rounded-lg hover:bg-[#108a00] transition-colors flex items-center justify-center gap-2"
+                    >
+                      <FaEdit />
+                      Chỉnh sửa
+                    </button>
+                    <button
+                      onClick={handleExportPDF}
+                      className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <FaFilePdf className="mr-2" />
+                      Xuất PDF
+                    </button>
+                  </>
                 )}
               </div>
             </div>
@@ -484,7 +616,7 @@ const Profile = () => {
                       <input
                         type="text"
                         name={`school-${index}`}
-                        value={edu.school || ''}
+                        value={edu.school || ""}
                         onChange={(e) =>
                           handleEducationChange(index, "school", e.target.value)
                         }
@@ -494,7 +626,7 @@ const Profile = () => {
                       <input
                         type="text"
                         name={`degree-${index}`}
-                        value={edu.degree || ''}
+                        value={edu.degree || ""}
                         onChange={(e) =>
                           handleEducationChange(index, "degree", e.target.value)
                         }
@@ -509,7 +641,7 @@ const Profile = () => {
                           <input
                             type="date"
                             name={`startDate-${index}`}
-                            value={edu.startDate || ''}
+                            value={edu.startDate || ""}
                             onChange={(e) =>
                               handleEducationChange(
                                 index,
@@ -527,7 +659,7 @@ const Profile = () => {
                           <input
                             type="date"
                             name={`endDate-${index}`}
-                            value={edu.endDate || ''}
+                            value={edu.endDate || ""}
                             onChange={(e) =>
                               handleEducationChange(
                                 index,
@@ -541,7 +673,7 @@ const Profile = () => {
                       </div>
                       <textarea
                         name={`description-${index}`}
-                        value={edu.description || ''}
+                        value={edu.description || ""}
                         onChange={(e) =>
                           handleEducationChange(
                             index,
@@ -578,17 +710,24 @@ const Profile = () => {
                         className="border-l-4 border-[#14a800] pl-4"
                       >
                         <h3 className="text-lg font-semibold text-gray-900">
-                          {edu.school || 'Chưa có thông tin trường'}
+                          {edu.school || "Chưa có thông tin trường"}
                         </h3>
-                        <p className="text-[#14a800]">{edu.degree || 'Chưa có thông tin bằng cấp'}</p>
-                        <p className="text-sm text-gray-500">
-                          {(edu.startDate || 'Không rõ')} - {(edu.endDate || 'Hiện tại')}
+                        <p className="text-[#14a800]">
+                          {edu.degree || "Chưa có thông tin bằng cấp"}
                         </p>
-                        <p className="mt-2 text-gray-600">{edu.description || 'Chưa có mô tả'}</p>
+                        <p className="text-sm text-gray-500">
+                          {edu.startDate || "Không rõ"} -{" "}
+                          {edu.endDate || "Hiện tại"}
+                        </p>
+                        <p className="mt-2 text-gray-600">
+                          {edu.description || "Chưa có mô tả"}
+                        </p>
                       </div>
                     ))
                   ) : (
-                    <p className="text-gray-500 text-center">Chưa có thông tin học vấn</p>
+                    <p className="text-gray-500 text-center">
+                      Chưa có thông tin học vấn
+                    </p>
                   )}
                 </div>
               )}
